@@ -31,7 +31,7 @@
 | 05 notools local-fast | OK | 8/8 successful ids |
 | 05 tools gemini-lite-native | OK | 8/8 successful ids |
 | 05 notools gemini-lite-native | OK | 8/8 successful ids |
-| Chat comparison screenshots | MISSING | 0 PNG files; manual 4x5 response review also required |
+| Chat comparison records and screenshots | OK | 20 records/PNG hashes and scores checked; 18/20 correct, 2 errors; privacy confirmed by student; model-ID/crop limitations in chat-comparison.md |
 | Student label review | OK | explicit student confirmation and matching dataset hashes in annotation-review.json |
 | Group registration | MISSING | user will add it manually; no confirmation recorded |
 | Weekly snapshots and oral defense | MISSING | historical attendance/snapshots and personal defense cannot be manufactured |

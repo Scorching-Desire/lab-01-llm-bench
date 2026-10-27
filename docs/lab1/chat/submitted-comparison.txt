@@ -1,0 +1,236 @@
+### Gemini · t01
+Модель: Gemini Auto. 2026-10-27 14:21
+<details><summary>Відповідь 1</summary>
+
+{
+"label": "ремонт"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![Gemini t01](chat/gemini-t01.png)
+
+
+### Gemini · t07
+Модель: Gemini Auto. 2026-10-27 14:21
+<details><summary>Відповідь 2</summary>
+
+{
+"label": "оплата"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![Gemini t07](chat/gemini-t07.png)
+
+### Gemini · t08
+Модель: Gemini Auto. 2026-10-27 14:21
+<details><summary>Відповідь 3</summary>
+
+{
+"label": "доступ"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![Gemini t08](chat/gemini-t08.png)
+
+### Gemini · t24
+Модель: Gemini Auto. 2026-10-27 14:21
+<details><summary>Відповідь 4</summary>
+
+{
+"label": "ремонт"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![Gemini t24](chat/gemini-t24.png)
+
+### Gemini · t25
+Модель: Gemini Auto. 2026-10-27 14:21
+<details><summary>Відповідь 5</summary>
+
+{
+"label": "оплата"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![Gemini t25](chat/gemini-t25.png)
+
+
+### Claude · t01
+Модель: Haiku 5.5 Low. 2026-10-27 14:29
+<details><summary>Відповідь 1</summary>
+
+{
+"label": "ремонт"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![Claude t01](chat/claude-t01.png)
+
+
+### Claude · t07
+Модель: Haiku 5.5 Low. 2026-10-27 14:29
+<details><summary>Відповідь 2</summary>
+
+{
+"label": "оплата"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![Claude t07](chat/claude-t07.png)
+
+### Claude · t08
+Модель: Haiku 5.5 Low. 2026-10-27 14:29
+<details><summary>Відповідь 3</summary>
+
+{
+"label": "доступ"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![Claude t08](chat/claude-t08.png)
+
+### Claude · t24
+Модель: Haiku 5.5 Low. 2026-10-27 14:29
+<details><summary>Відповідь 4</summary>
+
+{
+"label": "ремонт"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![Claude t24](chat/claude-t24.png)
+
+### Claude · t25
+Модель: Haiku 5.5 Low. 2026-10-27 14:29
+<details><summary>Відповідь 5</summary>
+
+{
+"label": "оплата"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![Claude t25](chat/claude-t25.png)
+
+### ChatGPT · t01
+Модель: ChatGPT. 2026-10-27 14:29
+<details><summary>Відповідь 1</summary>
+
+{
+"label": "ремонт"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![ChatGPT t01](chat/chatgpt-t01.png)
+
+
+### ChatGPT · t07
+Модель: ChatGPT. 2026-10-27 14:29
+<details><summary>Відповідь 2</summary>
+
+{
+"label": "оплата"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![ChatGPT t07](chat/chatgpt-t07.png)
+
+### ChatGPT · t08
+Модель: ChatGPT. 2026-10-27 14:29
+<details><summary>Відповідь 3</summary>
+
+{
+"label": "доступ"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![ChatGPT t08](chat/chatgpt-t08.png)
+
+### ChatGPT · t24
+Модель: ChatGPT. 2026-10-27 14:29
+<details><summary>Відповідь 4</summary>
+
+{
+"label": "ремонт"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![ChatGPT t24](chat/chatgpt-t24.png)
+
+### ChatGPT · t25
+Модель: ChatGPT. 2026-10-27 14:29
+<details><summary>Відповідь 5</summary>
+
+{
+"label": "оплата"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![ChatGPT t25](chat/chatgpt-t25.png)
+
+### ollama · t01
+Модель: ollama qwen3:1.7b. 2026-10-27 14:54
+<details><summary>Відповідь 1</summary>
+
+{"label": "ремонт"}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![qwen3 t01](chat/qwen3-t01.png)
+
+
+### ollama · t07
+Модель: ollama qwen3:1.7b. 2026-10-27 14:29
+<details><summary>Відповідь 2</summary>
+
+{
+"label": "оплата"
+}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![qwen3 t07](chat/qwen3-t07.png)
+
+### ollama · t08
+Модель: ollama qwen3:1.7b. 2026-10-27 14:29
+<details><summary>Відповідь 3</summary>
+
+{"label": "доступ"}
+
+</details>
+Правильно: так. Впевнена помилка: ні.
+![qwen3 t08](chat/qwen3-t08.png)
+
+### ollama · t24
+Модель: ollama qwen3:1.7b. 2026-10-27 14:29
+<details><summary>Відповідь 4</summary>
+
+{"label": "оплата"}
+
+</details>
+Правильно: ні. Впевнена помилка: так.
+![qwen3 t24](chat/qwen3-t24.png)
+
+### ollama · t25
+Модель: ollama qwen3:1.7b. 2026-10-27 14:29
+<details><summary>Відповідь 5</summary>
+
+{"label": "доступ"}
+
+</details>
+Правильно: ні. Впевнена помилка: так.
+![qwen3 t25](chat/qwen3-t25.png)

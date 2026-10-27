@@ -9,7 +9,7 @@
 | Г3 | 00 | .gitignore; .env.example | `git log --all --oneline -- .env; git check-ignore .env` | так, секрети перевірено |
 | Г4 | 06 | цей перший розділ | `огляд таблиці` | так |
 | П1 | 01 | data/golden.jsonl; task.md; annotation-review.json | `uv run python scripts/validate_golden.py` | так; q15 у 1bad5ce до кроку 02; очікувані мітки незмінні |
-| П2 | 01 | task.md; models.md; chat-comparison.md; chat/ | `git ls-files docs/lab1/chat` | частково: картки й задача є; 4×5 чатів/скриншоти не виконано |
+| П2 | 01 | task.md; models.md; chat-comparison.md; chat/review.json; 20 PNG | `uv run python scripts/audit.py` | так: 4×5 відповідей, 20 PNG, Qwen 3/5 із двома впевненими помилками; межі model ID/обрізання розкриті |
 | П3 | 02 | results/02-tokens.jsonl; basics.md | `uv run python scripts/report.py tokens` | так: 2 лічильники × 10 пар |
 | П4 | 02 | results/02-sampling.jsonl; 02-reasoning.jsonl; basics.md | `uv run python scripts/report.py sampling reasoning` | так: 40 + 20 рядків, параметри й числовий висновок |
 | П5 | 03 | prompts/; results/03-*.jsonl | `uv run python scripts/audit.py` | так: 8 локальних конфігурацій по 25, 4 Flash-Lite по 15 q15 |
@@ -25,7 +25,7 @@
 | Р3 | 00–05 | conftest.py, test_score, test_clients, test_agent_loop | `uv run pytest` | так локально й у чистому клоні; без мережі |
 | Р4 | 06 | ai-usage.md; annotation-review.json | `огляд усіх кроків 00–06` | так: 41 запропоновано, студент підтвердив, змін 0 |
 
-Уся лабораторна **ще не готова до подання**: локальні та Gemini API-експерименти завершені, але чат-порівняння зі скриншотами не виконано; запис у таблицю й захист особисті. Відтворення в чистому клоні — [verification.md](verification.md). Деталізований автоматичний аудит — [audit.md](audit.md), наступні дії — [remaining.md](remaining.md). Пропуски доказів не приховуються.
+Локальні та Gemini API-експерименти й чат-порівняння завершені. Студент надав 20 відповідей/PNG та підтвердив вимкнення навчання на розмовах у всіх трьох чат-застосунках. Усі оцінки перевірені; обмеження ідентифікації моделей описані в [chat-comparison.md](chat-comparison.md). Повне виконання курсу **ще не засвідчене**: запис у таблицю користувач робить вручну, історичні знімки й особистий захист не підтверджені. Відтворення в чистому клоні — [verification.md](verification.md), автоматичний аудит — [audit.md](audit.md), наступні дії — [remaining.md](remaining.md).
 
 ## Метод
 Задача, baseline, правила та гіпотези — [task.md](task.md). Golden: dev=8, test=25, q15=15, hard=10, injection=2; hash `18fdb0c1ac27`. Tool-кейсів 8, hash `783a1bf7a70c`. Набори синтетичні; студент підтвердив 41 мітку, змін 0, після частини локальних прогонів (відхилення розкрито у task.md).

@@ -52,6 +52,40 @@ def check_results():
     return errors
 
 
+def check_chat():
+    path = Path("docs/lab1/chat/review.json")
+    if not path.is_file():
+        return False, "missing chat review manifest"
+    try:
+        review = json.loads(path.read_text(encoding="utf-8"))
+        source = Path(review["submitted_transcript"])
+        assert data.sha256_file(source) == review["submitted_transcript_sha256"]
+        assert data.sha256_file("data/golden.jsonl") == review["golden_sha256"]
+        golden = {ex.id: ex for ex in data.load_jsonl("data/golden.jsonl")}
+        records = review["records"]
+        surfaces = {"ChatGPT", "Claude", "Gemini", "ollama"}
+        ids = {"t01", "t07", "t08", "t24", "t25"}
+        assert len(records) == 20
+        assert {(r["surface"], r["id"]) for r in records} == {(s, i) for s in surfaces for i in ids}
+        assert len({r["screenshot"] for r in records}) == 20
+        for record in records:
+            screenshot = Path(record["screenshot"])
+            assert screenshot.suffix == ".png" and screenshot.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
+            assert data.sha256_file(screenshot) == record["screenshot_sha256"]
+            assert record["expected"] == golden[record["id"]].expected
+            assert record["parsed"] == score.parse_output(record["response_text"])
+            assert record["correct"] == score.is_correct(record["expected"], record["parsed"])
+        assert any(not r["correct"] for r in records)
+        assert review["screenshots_visually_reviewed"] == 20
+        assert review["student_confirmed_completion"]
+        assert all(review["privacy_training_disabled"].get(s) is True for s in ("ChatGPT", "Claude", "Gemini"))
+    except (KeyError, ValueError, TypeError, OSError, AssertionError) as exc:
+        return False, f"chat evidence validation failed: {type(exc).__name__}: {exc}"
+    correct = sum(r["correct"] for r in records)
+    return True, (f"20 records/PNG hashes and scores checked; {correct}/20 correct, {20-correct} errors; "
+                  "privacy confirmed by student; model-ID/crop limitations in chat-comparison.md")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out")
@@ -89,8 +123,8 @@ def main():
             result = data.read_rows(f"results/05-t1-{alias}-{mode}.jsonl")
             count = len({r["id"] for r in result if not r["error_type"]})
             add(f"05 {mode} {alias}", count == 8, f"{count}/8 successful ids")
-    screenshots = list(Path("docs/lab1/chat").glob("*.png"))
-    add("Chat comparison screenshots", len(screenshots) >= 4, f"{len(screenshots)} PNG files; manual 4x5 response review also required")
+    chat_ok, chat_detail = check_chat()
+    add("Chat comparison records and screenshots", chat_ok, chat_detail)
     review_path = Path("docs/lab1/annotation-review.json")
     review = json.loads(review_path.read_text(encoding="utf-8")) if review_path.exists() else {}
     reviewed = (review.get("golden_labels") == 33 and review.get("tool_labels") == 8

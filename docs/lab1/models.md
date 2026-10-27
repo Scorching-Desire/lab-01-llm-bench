@@ -35,6 +35,12 @@
 - Стандартна ціна 2/10 USD за 1M input/output. Cutoff червень 2026; retirement не раніше 2027-09-28.
 - Джерело: https://platform.claude.com/docs/en/models/overview (2026-10-27).
 
+## Моделі студентського чат-порівняння
+- Claude: студент записав Haiku 5.5 Low; селектор не вмістився в PNG. Довідково API-модель claude-haiku-5-5: Anthropic, закриті ваги, текст/зображення → текст, контекст 1M, вихід 128K, adaptive thinking, cutoff червень 2026; зняття не раніше 2027-10-07. API-ціна від $0.10/$0.50 за 1M input/output не є виміряною ціною чату. Джерело (2026-10-27): https://platform.claude.com/docs/en/models/overview . API ID не доводить backend конкретного чату.
+- ChatGPT: вебінтерфейс, за підтвердженням студента, не показує ID. Контекст, cutoff, ваги й ціна конкретного backend невідомі; API-картка за припущенням не підставляється.
+- Gemini Auto: на PNG видно «Моделі Gemini 3» і «Менше міркування». Точний backend невідомий; API-картка Flash-Lite не переноситься на цей чат.
+- Ollama qwen3:1.7b: картка local вище; у CLI thinking=false, sampling за замовчуванням. Це інша умова, ніж API v4/B. Повні докази й результати — chat-comparison.md.
+
 ## openrouter · конфігураційний псевдонім
 Не активований; OPENROUTER_MODEL має бути заданий користувачем, ID/ліцензія/контекст до вибору невідомі. Не включений у результати чи рекомендації. Для :free реєстр має 0/0; перед платною моделлю треба оновити картку й ціни. `require_parameters=True` обов’язковий.
 Джерела: https://openrouter.ai/docs/guides/routing/provider-selection ; https://openrouter.ai/docs/api_reference/limits .
