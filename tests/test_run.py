@@ -71,3 +71,18 @@ def test_dispatcher_records_concurrency_and_prevents_mixing(tmp_path):
     assert rows(out)[0]["concurrency"] == 4
     with pytest.raises(ValueError, match="concurrency"):
         run.main(args + ["--resume"], concurrency=1, chat=fake_chat)
+
+
+def test_quota_stop_does_not_repeat_request():
+    class Exhausted(Exception):
+        status_code = 429
+        bench_retryable = False
+
+    calls = []
+
+    def call():
+        calls.append(True)
+        raise Exhausted("quota exhausted")
+
+    result, error = run.with_retries(call, attempts=5)
+    assert result is None and error[0] == "rate_limit" and len(calls) == 1

@@ -2,20 +2,14 @@
 
 Користувач відновив дозвіл на Gemini 2026-10-27. Ключ і доступність gemini-3.8-flash перевірено; реальні dev-проби розпочато. Перший OpenAI-сумісний виклик правильний, але затримка 145955 мс. Продовження матриці залежить від фактичних відповідей і квоти, а не від попередньої заборони.
 
-Gemini-матриця для продовження наведена нижче (в межах квоти; `--resume` обов’язковий). Ці команди зараз **не виконувались**:
+Для продовження використовуй обмежений диспетчер (параметри відновлення мають збігатися):
 
 ```powershell
-foreach ($v in 'v0','v1','v2','v4') {
-  uv run python -m bench.run --prompt "prompts/$v.md" --model gemini --split test --tag q15 --resume
-}
-foreach ($m in 'A','B') {
-  uv run python -m bench.run --prompt prompts/v4.md --model gemini-native --split test --tag q15 --mode $m --resume
-}
-foreach ($t in 'station_status,booking_status','none') {
-  uv run python -m bench.run --prompt prompts/t1.md --model gemini-native --data data/tool_cases.jsonl --split tool --tools $t --resume
-}
-uv run python scripts/report.py
+python -m uv run python scripts/cloud_benchmark.py --workers 16 --max-rpm 6
+python -m uv run python scripts/report.py
 ```
+
+Він запускає A/B на q15, чотири промпти на q15 та tool-кейси з/без інструментів; після quota/provider stop зберігає вже отримані рядки. Поточні спроби й умови — gemini.md. Стара серійна команда в той самий файл із concurrency=1 навмисно відхиляється, щоб не змішати умови.
 
 Далі оновити числовий аналіз та аудит, запустити тести й перевірити CI, зробити новий commit/push. Дві локальні моделі не замінюють вимогу двох живих форм API.
 

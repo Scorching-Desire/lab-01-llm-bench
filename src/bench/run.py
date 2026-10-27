@@ -37,7 +37,7 @@ def with_retries(call, attempts: int = 5):
             return call(), None
         except Exception as exc:  # noqa: BLE001 — будь-яка помилка стає рядком результатів
             kind = error_type(exc)
-            if kind not in RETRYABLE or i == attempts:
+            if kind not in RETRYABLE or i == attempts or getattr(exc, "bench_retryable", True) is False:
                 text = f"{type(exc).__name__}: {exc}"
                 for name, value in os.environ.items():  # текст помилки — без значень ключів
                     text = text.replace(value, "***") if name.endswith("_API_KEY") and value else text

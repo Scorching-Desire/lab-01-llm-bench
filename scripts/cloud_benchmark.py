@@ -16,20 +16,21 @@ class NotDispatched(BaseException):
     """No API call was made, so this cancellation must not create a result row."""
 
 
-def jobs(stages):
+def jobs(stages, family="flash"):
+    compatible, native = ("gemini-lite", "gemini-lite-native") if family == "lite" else ("gemini", "gemini-native")
     result = []
     if "04" in stages:
         for mode in ("B", "A"):
-            result.append((f"04-{mode}", "gemini-native", "prompts/v4.md", "data/golden.jsonl", "test", "q15",
-                           ["--mode", mode], f"results/04-{mode}-gemini-native.jsonl"))
+            result.append((f"04-{mode}", native, "prompts/v4.md", "data/golden.jsonl", "test", "q15",
+                           ["--mode", mode], f"results/04-{mode}-{native}.jsonl"))
     if "03" in stages:
         for version in ("v0", "v1", "v2", "v4"):
-            result.append((f"03-{version}", "gemini", f"prompts/{version}.md", "data/golden.jsonl", "test", "q15",
-                           [], f"results/03-{version}-gemini.jsonl"))
+            result.append((f"03-{version}", compatible, f"prompts/{version}.md", "data/golden.jsonl", "test", "q15",
+                           [], f"results/03-{version}-{compatible}.jsonl"))
     if "05" in stages:
         for tools, name in (("station_status,booking_status", "tools"), ("none", "notools")):
-            result.append((f"05-{name}", "gemini-native", "prompts/t1.md", "data/tool_cases.jsonl", "tool", None,
-                           ["--tools", tools], f"results/05-t1-gemini-native-{name}.jsonl"))
+            result.append((f"05-{name}", native, "prompts/t1.md", "data/tool_cases.jsonl", "tool", None,
+                           ["--tools", tools], f"results/05-t1-{native}-{name}.jsonl"))
     return result
 
 
@@ -39,6 +40,7 @@ def main():
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--max-rpm", type=float, default=6)
     ap.add_argument("--retry-attempts", type=int, default=5)
+    ap.add_argument("--family", choices=["flash", "lite"], default="flash")
     ap.add_argument("--stages", default="04,03,05")
     a = ap.parse_args()
     if a.workers < 1 or a.max_rpm <= 0 or a.retry_attempts < 1 or not set(a.stages.split(",")) <= {"03", "04", "05"}:
@@ -52,7 +54,7 @@ def main():
             raise SystemExit(f"commit {name} before cloud measurements")
     tasks = []
     batch = data.utc_now().replace(":", "-") + "_cloud_" + uuid.uuid4().hex[:8]
-    for stage, alias, prompt, dataset, split, tag, extra, out in jobs(a.stages.split(",")):
+    for stage, alias, prompt, dataset, split, tag, extra, out in jobs(a.stages.split(","), a.family):
         clients._client(models.get(alias))  # initialize before sharing the HTTP clients across workers
         done = {r["id"] for r in data.read_rows(out) if r["error_type"] is None}
         for ex in data.select(data.load_jsonl(dataset), split=split, tag=tag):
@@ -83,6 +85,7 @@ def main():
             # stop new cases immediately; exhausted transient errors stop them below.
             if run.error_type(exc) not in {"server", "timeout"}:
                 stop.set()
+                exc.bench_retryable = False
             raise exc
 
     def work(task):
