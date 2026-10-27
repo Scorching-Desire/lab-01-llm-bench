@@ -49,7 +49,7 @@ MODELS: dict[str, ModelSpec] = {
     "gemini": ModelSpec(
         alias="gemini", api="openai_chat", model="gemini-3.8-flash",
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/", key_env="GEMINI_API_KEY",
-        params={"reasoning_effort": "low"},  # temperature не надсилаємо: deprecated і ігнорується
+        params={"reasoning_effort": "low", "max_tokens": 4096},  # без застарілих параметрів вибірки
         caps={"tools": True, "json_schema": True, "reasoning_control": True},
         price_in=0.75, price_out=3.75, price_src="https://ai.google.dev/gemini-api/docs/pricing",
         price_date="2026-10-27", free_tier=True, trains_on_data=True,
