@@ -31,8 +31,10 @@ def test_marker_replacement_is_idempotent(tmp_path):
     report = module()
     path = tmp_path / "doc.md"
     path.write_text("Introduction\n<!-- report:begin x -->\nold\n<!-- report:end -->\nAnalysis\n", encoding="utf-8")
+    original = path.read_bytes()
     report.write_block(str(path), "x", "table")
     before = path.read_bytes()
     report.write_block(str(path), "x", "table")
     assert path.read_bytes() == before
-    assert before.startswith(b"Introduction") and before.endswith(b"Analysis\n")
+    assert before.split(b"<!-- report:begin")[0] == original.split(b"<!-- report:begin")[0]
+    assert before.split(b"<!-- report:end -->")[1] == original.split(b"<!-- report:end -->")[1]
