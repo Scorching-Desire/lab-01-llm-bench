@@ -1,0 +1,22 @@
+{
+  "checked_at": "2026-10-27T11:23:38.833219+00:00",
+  "source_commit": "2d9735d4f55207df12b2eec3929b920189ed549d",
+  "commands": [
+    "python -m uv sync --locked",
+    "python -m uv run python -m bench.run --prompt prompts/v4.md --model local --split test --mode B",
+    "python -m uv run python scripts/report.py structured"
+  ],
+  "offline_tests_passed": 42,
+  "ruff": "passed",
+  "original_rows_preserved": true,
+  "rows_total": 50,
+  "new_calls": 25,
+  "unique_ids": 25,
+  "correct": 21,
+  "schema_valid": 25,
+  "median_latency_ms": 81,
+  "raw_output_differences": 0,
+  "matching_model_prompt_dataset_params": true,
+  "raw_file": "results/reproduction/04-B-local.jsonl",
+  "raw_file_sha256": "d289f1e7082852b207ac0fa2216ff67cf3d7c945252247125196d74a6afb87c5"
+}

@@ -37,6 +37,8 @@ def load_rows(pattern: str) -> list[dict]:
     """Усі рядки файлів за шаблоном (у стабільному порядку); поле _file — назва файлу."""
     # Top-level globs exclude dev tuning and the explicitly interrupted 4B latency pilot
     # in results/exploratory/. Its raw rows are retained, but it is not a complete test matrix.
+    # results/reproduction/ is an independent clean-clone check; mixing it into the frozen
+    # main experiment would replace its measured latency and duplicate the original rows.
     rows = []
     for path in sorted(glob.glob(pattern)):
         with open(path, encoding="utf-8") as f:

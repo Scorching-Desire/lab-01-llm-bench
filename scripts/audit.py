@@ -24,7 +24,9 @@ def committed_hash(sha, file):
 def check_results():
     errors = []
     golden = {ex.id: ex for ex in data.load_jsonl("data/golden.jsonl") + data.load_jsonl("data/tool_cases.jsonl")}
-    for path in sorted(Path("results").glob("*.jsonl")):
+    paths = [*Path("results").glob("*.jsonl"), *Path("results/reproduction").glob("*.jsonl"),
+             *Path("results/exploratory").glob("*.jsonl")]
+    for path in sorted(paths):
         for line, r in enumerate(data.read_rows(path), 1):
             prefix = f"{path}:{line}"
             missing = set(data.FIELDS) - r.keys()
