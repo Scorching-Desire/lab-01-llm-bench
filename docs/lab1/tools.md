@@ -15,7 +15,18 @@ max_steps=6, token_budget=20000; історія щоразу надсилаєт�
 <!-- report:end -->
 
 ## Висновок і траси
-Траси записуються у results/traces/; фінальний крок має tool=null. Точні посилання додаються після прогонів. Gemini відкладено за вказівкою користувача.
+
+Local: 6/8 з інструментами проти 2/8 без; потрібні інструменти викликані у 8/8, валідні аргументи 10/10, у середньому 2.0 кроки. ДІ точності [0.41;0.93] і [0.07;0.59] перетинаються: напрям ефекту позитивний у вибірці, статистично переконливої переваги на n=8 не встановлено.
+
+Local-fast: нативних викликів 0, тому валідність аргументів — «—», а не 100%. Інструменти були передані, але модель віддала фінальну відповідь без них: 2/8 проти 1/8 без tools. Це спостереження про слабку модель, а не успішний агент.
+
+Конкретні траси:
+
+- k04: [правильний стан «оплачено», рядок 7](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L7) → [хибна оплата, рядок 8](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L8). Це помилка застосування правила 9, не інструмента.
+- k05: [стан несправна, рядок 9](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L9) і [не оплачено, рядок 10](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L10) → [оплата, рядок 11](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L11): порушено пріоритет ремонту.
+- k08: [tool_error, рядок 17](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L17) → [правильне інше, рядок 18](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L18). Тип аргументу валідний, бізнес-формат B-INVALID неправильний; цикл продовжився.
+
+Додаткові поля у фінальній tool-відповіді не впливають на label accuracy; на кроці 05 строга схема фінальної відповіді не застосовується. На кроці 04 такі поля були б невалідними. Gemini не викликався.
 
 ## Чому це може не відтворитися
 Лише 8 синтетичних кейсів і 2 локальні моделі однієї сім’ї. Неправильні аргументи й текстовий виклик інструмента є виміряними збоями, а не прихованими успіхами. Зміна таблиць tools.py вимагає нових результатів і фіксації версії коду.
