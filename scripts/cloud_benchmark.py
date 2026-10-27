@@ -38,9 +38,10 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--max-rpm", type=float, default=6)
+    ap.add_argument("--retry-attempts", type=int, default=5)
     ap.add_argument("--stages", default="04,03,05")
     a = ap.parse_args()
-    if a.workers < 1 or a.max_rpm <= 0 or not set(a.stages.split(",")) <= {"03", "04", "05"}:
+    if a.workers < 1 or a.max_rpm <= 0 or a.retry_attempts < 1 or not set(a.stages.split(",")) <= {"03", "04", "05"}:
         ap.error("positive workers/rpm and stages 03,04,05 required")
     # Freeze corpus, hypotheses and prompts before any test request.
     for name in ("data/golden.jsonl", "data/tool_cases.jsonl", "docs/lab1/task.md",
@@ -89,7 +90,7 @@ def main():
         if stop.is_set():
             return "skipped", stage, case_id
         try:
-            run.main(args, concurrency=a.workers, retry_attempts=1, chat=chat)
+            run.main(args, concurrency=a.workers, retry_attempts=a.retry_attempts, chat=chat)
         except NotDispatched:
             return "skipped", stage, case_id
         rows = [r for r in data.read_rows(out) if r["id"] == case_id]
@@ -103,7 +104,8 @@ def main():
         for future in as_completed(futures):
             state, stage, case_id = future.result()
             failed += state != "ok"
-            print(f"{data.utc_now()} {stage} {case_id}: {state}", flush=True)
+            if state != "skipped":
+                print(f"{data.utc_now()} {stage} {case_id}: {state}", flush=True)
     print(f"Finished: complete={len(tasks)-failed}/{len(tasks)}. Resume with the same settings.", flush=True)
     raise SystemExit(int(bool(failed)))
 

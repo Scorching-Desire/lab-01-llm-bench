@@ -56,10 +56,11 @@ def new_row(**fields) -> dict:
 
 
 def read_rows(path: str | Path) -> list[dict]:
-    if not Path(path).exists():
-        return []
-    with open(path, encoding="utf-8") as f:
-        return [json.loads(line) for line in f if line.strip()]
+    with _append_lock:
+        if not Path(path).exists():
+            return []
+        with open(path, encoding="utf-8") as f:
+            return [json.loads(line) for line in f if line.strip()]
 
 
 def append_row(path: str | Path, row: dict) -> None:
