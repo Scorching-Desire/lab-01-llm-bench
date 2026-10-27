@@ -16,7 +16,7 @@
 - price_in=0, price_out=0 USD/1M; джерело ціни реєстру https://ollama.com/library/qwen3 (2026-10-27). Дані локальні.
 - У встановленого тега thinking.values=[true], шаблон завжди відкриває think. Проба none не вимкнула міркування. Тому high явно заданий; це інша експериментальна умова, а не порівняння лише розмірів ваг.
 - Відсічення знань і дата зняття: не опубліковано у використаній картці.
-- Джерела: https://huggingface.co/Qwen/Qwen3-4B ; https://ollama.com/library/qwen3:4b ; local-probe.json (вимір локального тега).
+- Джерела: https://huggingface.co/Qwen/Qwen3-4B ; https://ollama.com/library/qwen3:4b ; model-snapshots.json (метадані локального тега).
 - Розбіжність із методичкою: у ній qwen3:4b рекомендовано для none/high; наш встановлений шаблон не підтримав none. Оригінальний тег користувача не змінювався.
 
 ## gemini / gemini-native · gemini-3.8-flash
@@ -38,3 +38,12 @@
 ## openrouter · конфігураційний псевдонім
 Не активований; OPENROUTER_MODEL має бути заданий користувачем, ID/ліцензія/контекст до вибору невідомі. Не включений у результати чи рекомендації. Для :free реєстр має 0/0; перед платною моделлю треба оновити картку й ціни. `require_parameters=True` обов’язковий.
 Джерела: https://openrouter.ai/docs/guides/routing/provider-selection ; https://openrouter.ai/docs/api_reference/limits .
+
+## local-fast · qwen3:0.6b
+- Qwen/Alibaba; відкриті ваги, Apache-2.0. Вхід/вихід текст/текст. Контекст upstream 32768, стенд 16384.
+- Роль: швидкий другий локальний comparator. price_in=0, price_out=0 USD/1M; price_date=2026-10-27; price_src=https://ollama.com/library/qwen3 .
+- temperature=0, seed=7, reasoning_effort=none, max_tokens=512; tools/schema/thinking за документацією. Відсічення знань і зняття у використаній картці не опубліковано.
+- Джерело: https://huggingface.co/Qwen/Qwen3-0.6B (2026-10-27).
+
+## Заміна повільного comparator
+У 4B пілоті отримано 11 завершених рядків, медіана 16386.0 мс, максимум 3018 вихідних токенів. Подальші 4B-виклики зупинено через витрати часу; наявні рядки збережені без змін у results/exploratory/03-v0-local-large.jsonl. Вибір 0.6B зроблено за затримкою, а не за точністю; пілот не є повною абляцією й не включений у основну таблицю. Первинні промпти/мітки/гіпотези незмінні.

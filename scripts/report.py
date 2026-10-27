@@ -35,6 +35,8 @@ def write_block(md_path: str, name: str, markdown: str) -> None:
 
 def load_rows(pattern: str) -> list[dict]:
     """Усі рядки файлів за шаблоном (у стабільному порядку); поле _file — назва файлу."""
+    # Top-level globs exclude dev tuning and the explicitly interrupted 4B latency pilot
+    # in results/exploratory/. Its raw rows are retained, but it is not a complete test matrix.
     rows = []
     for path in sorted(glob.glob(pattern)):
         with open(path, encoding="utf-8") as f:
@@ -98,9 +100,11 @@ def acc_table(groups: dict[str, list[dict]], prices: dict) -> str:
                       f"{k / n:.2f}" if n else "—", f"[{low:.2f}; {high:.2f}]",
                       frac(sum(r["correct"] for r in tagged("hard")), len(tagged("hard"))),
                       frac(sum(r["correct"] for r in tagged("injection")), len(tagged("injection"))),
-                      error_summary(rows), f"{cost(ok, prices):.4f}"])
+                      error_summary(rows), f"{cost(ok, prices):.4f}",
+                      statistics.median(r["latency_ms"] for r in ok) if ok else "—",
+                      f"{statistics.mean(r['output_tokens'] or 0 for r in ok):.1f}" if ok else "—"])
     return md_table(["файл", "модель", "промпт", "n", "точність", "95% ДІ", "hard", "injection", "помилки",
-                     "вартість, $"], table)
+                     "вартість, $", "затримка, мс (медіана)", "вихідних токенів (сер.)"], table)
 
 
 # --- [студент] блоки звіту -----------------------------------------------------------

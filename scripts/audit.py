@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import subprocess
+from functools import lru_cache
 from pathlib import Path
 
 from bench import data, prompts, score
@@ -11,6 +12,12 @@ REQUIRED = ["README.md", "pyproject.toml", "uv.lock", ".python-version", ".env.e
                 ("README", "env", "task", "models", "chat-comparison", "basics", "prompts", "structured", "tools", "ai-usage")],
             *[f"src/bench/{name}.py" for name in ("clients", "models", "data", "score", "prompts", "schema", "run", "tools", "agent_loop")],
             *[f"tests/{name}.py" for name in ("conftest", "test_score", "test_clients", "test_run", "test_agent_loop")]]
+
+
+@lru_cache(maxsize=None)
+def committed_hash(sha, file):
+    old = subprocess.run(["git", "show", f"{sha}:{file}"], capture_output=True, check=False)
+    return hashlib.sha256(old.stdout).hexdigest() if old.returncode == 0 else None
 
 
 def check_results():
@@ -37,8 +44,7 @@ def check_results():
                     errors.append(f"{prefix}: prompt hash mismatch")
                 for file, expected_hash in [(f"prompts/{version}.md", r["prompt_sha256"]),
                     ("data/tool_cases.jsonl" if path.name.startswith("05-") else "data/golden.jsonl", r["dataset_sha256"])]:
-                    old = subprocess.run(["git", "show", f"{r['git_sha']}:{file}"], capture_output=True, check=False)
-                    if old.returncode or hashlib.sha256(old.stdout).hexdigest() != expected_hash:
+                    if committed_hash(r["git_sha"], file) != expected_hash:
                         errors.append(f"{prefix}: {file} not committed at recorded SHA")
     return errors
 
@@ -59,19 +65,19 @@ def main():
     for name, minimum in [("tokens", 20), ("sampling", 40), ("reasoning", 20)]:
         result = data.read_rows(f"results/02-{name}.jsonl")
         add(f"02 {name}", len(result) >= minimum, f"{len(result)} rows, need >= {minimum}")
-    for alias in ("local", "local-large", "gemini"):
+    for alias in ("local", "local-fast", "gemini"):
         target = 25 if alias.startswith("local") else 15
         for version in ("v0", "v1", "v2", "v4"):
             result = data.read_rows(f"results/03-{version}-{alias}.jsonl")
             count = len({r["id"] for r in result if not r["error_type"]})
             add(f"03 {version} {alias}", count == target, f"{count}/{target} unique successful ids")
-    for alias in ("local", "local-large", "gemini-native"):
+    for alias in ("local", "local-fast", "gemini-native"):
         target = 25 if alias.startswith("local") else 15
         for mode in ("A", "B"):
             result = data.read_rows(f"results/04-{mode}-{alias}.jsonl")
             count = len({r["id"] for r in result if not r["error_type"]})
             add(f"04 {mode} {alias}", count == target, f"{count}/{target} successful ids")
-    for alias in ("local", "local-large", "gemini-native"):
+    for alias in ("local", "local-fast", "gemini-native"):
         for mode in ("tools", "notools"):
             result = data.read_rows(f"results/05-t1-{alias}-{mode}.jsonl")
             count = len({r["id"] for r in result if not r["error_type"]})

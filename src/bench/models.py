@@ -23,6 +23,13 @@ class ModelSpec:
 
 
 MODELS: dict[str, ModelSpec] = {
+    "local-fast": ModelSpec(
+        alias="local-fast", api="openai_chat", model="qwen3:0.6b",
+        base_url="http://localhost:11434/v1", key_env=None, api_key_default="ollama",
+        num_ctx=16384, params={"temperature": 0, "seed": 7, "reasoning_effort": "none", "max_tokens": 512},
+        caps={"tools": True, "json_schema": True, "reasoning_control": True},
+        price_src="https://ollama.com/library/qwen3", price_date="2026-10-27", trains_on_data=False,
+    ),
     "local-large": ModelSpec(
         alias="local-large", api="openai_chat", model="qwen3:4b",
         base_url="http://localhost:11434/v1", key_env=None, api_key_default="ollama",
@@ -75,4 +82,7 @@ def get(alias: str) -> ModelSpec:
             spec = replace(spec, model=env("LOCAL_LARGE_MODEL") or "qwen3:4b")
     elif alias == "openrouter":
         spec = replace(spec, model=env("OPENROUTER_MODEL") or spec.model)
+    elif alias == "local-fast":
+        spec = replace(spec, base_url=env("LOCAL_BASE_URL") or spec.base_url,
+                       num_ctx=int(env("LOCAL_NUM_CTX") or spec.num_ctx))
     return spec

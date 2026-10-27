@@ -12,10 +12,10 @@ def run(*args):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--stage", choices=["02", "03", "04", "05", "all"], default="all")
-    ap.add_argument("--models", default="local,local-large")
+    ap.add_argument("--models", default="local,local-fast")
     a = ap.parse_args()
     aliases = a.models.split(",")
-    if not set(aliases) <= {"local", "local-large"}:
+    if not set(aliases) <= {"local", "local-fast", "local-large"}:
         ap.error("this script is local-only; invoke bench.run explicitly for cloud models")
     for name in ["data/golden.jsonl", "data/tool_cases.jsonl", "data/ua_en.jsonl",
                  "docs/lab1/task.md", *map(str, Path("prompts").glob("*.md"))]:
