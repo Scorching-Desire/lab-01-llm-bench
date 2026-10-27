@@ -1,0 +1,40 @@
+# Картки моделей
+
+Дата звернення до всіх наведених джерел: 2026-10-27. Дві закриті моделі та дві з відкритими вагами.
+
+## local · qwen3:1.7b
+- Провайдер ваг: Qwen/Alibaba; рушій Ollama 0.40.11. Роль: основна локальна модель з перемиканням міркування.
+- Відкриті ваги, Apache-2.0. Вхід/вихід: текст/текст. Контекст ваг: 32768; фактично стенд: 16384.
+- API: openai_chat; temperature=0, seed=7, reasoning_effort=none, max_tokens=4096. Tools/schema/thinking підтримуються.
+- price_in=0, price_out=0 USD/1M; без API-плати (електроенергія і придбання GPU не оцінювались). Дані локальні.
+- Відсічення знань і дата зняття: не опубліковано у використаній картці.
+- Джерела: https://huggingface.co/Qwen/Qwen3-1.7B ; https://ollama.com/library/qwen3:1.7b ; https://docs.ollama.com/api/openai-compatibility
+
+## local-large · qwen3:4b
+- Провайдер ваг Qwen/Alibaba; Ollama. Роль: більша локальна модель для порівняння.
+- Відкриті ваги, Apache-2.0. Текст → текст. Upstream: 32768 нативно / 131072 із YaRN; фактичний контекст стенду 16384.
+- price_in=0, price_out=0 USD/1M; джерело ціни реєстру https://ollama.com/library/qwen3 (2026-10-27). Дані локальні.
+- У встановленого тега thinking.values=[true], шаблон завжди відкриває think. Проба none не вимкнула міркування. Тому high явно заданий; це інша експериментальна умова, а не порівняння лише розмірів ваг.
+- Відсічення знань і дата зняття: не опубліковано у використаній картці.
+- Джерела: https://huggingface.co/Qwen/Qwen3-4B ; https://ollama.com/library/qwen3:4b ; local-probe.json (вимір локального тега).
+- Розбіжність із методичкою: у ній qwen3:4b рекомендовано для none/high; наш встановлений шаблон не підтримав none. Оригінальний тег користувача не змінювався.
+
+## gemini / gemini-native · gemini-3.8-flash
+- Google; закрита модель. Дві форми одного ID: OpenAI-сумісна та generateContent.
+- Контекст до 1M, вихід до 64K. Вхід: текст, зображення, аудіо, відео; вихід: текст.
+- Ціна реєстру: price_in=0.75, price_out=3.75 USD/1M, price_date=2026-10-27, price_src=https://ai.google.dev/gemini-api/docs/pricing . Це сценарна платна ціна; free tier безкоштовний, запити можуть використовуватися для покращення продуктів.
+- З 2027-01-01 ціна 1.50/7.50. `report.py --price gemini=1.50/7.50 --price gemini-native=1.50/7.50` рахує сценарій без API-викликів.
+- Knowledge cutoff: березень 2026, у деяких доменах січень 2025; дата зняття в використаній model card не вказана.
+- Параметри: low; max_tokens=4096 у native; temperature/top_p/seed не надсилаються. Живі запити відкладені користувачем, підтримка в коді перевірена підробленим SDK.
+- Джерела: https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash ; https://ai.google.dev/gemini-api/docs/pricing ; https://deepmind.google/models/model-cards/gemini-3-8-flash/ ; https://ai.google.dev/gemini-api/docs/generate-content/thinking
+- `latest-model` уже веде до Gemini 4 Argon; ID лабораторної свідомо зафіксований, автоматичного переходу немає.
+
+## Claude Sonnet 5.5 · claude-sonnet-5-5
+- Anthropic; закриті ваги. Довідкова картка, модель не викликалась і не має псевдоніма для вимірів.
+- Контекст 1M; max output 128K. Вхід текст/зображення, вихід текст.
+- Стандартна ціна 2/10 USD за 1M input/output. Cutoff червень 2026; retirement не раніше 2027-09-28.
+- Джерело: https://platform.claude.com/docs/en/models/overview (2026-10-27).
+
+## openrouter · конфігураційний псевдонім
+Не активований; OPENROUTER_MODEL має бути заданий користувачем, ID/ліцензія/контекст до вибору невідомі. Не включений у результати чи рекомендації. Для :free реєстр має 0/0; перед платною моделлю треба оновити картку й ціни. `require_parameters=True` обов’язковий.
+Джерела: https://openrouter.ai/docs/guides/routing/provider-selection ; https://openrouter.ai/docs/api_reference/limits .

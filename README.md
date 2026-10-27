@@ -1,1 +1,51 @@
 # lab-01-llm-bench
+
+Lab 01: відтворюваний LLM bench для маршрутизації звернень навчального makerspace.
+[Офіційне завдання](https://koldovsky.github.io/2026-2027-practical-genai-agentic-course/labs/01-llm-bench).
+Звіт і чесний статус кожної вимоги: [docs/lab1/README.md](docs/lab1/README.md).
+
+## Відтворення головної таблиці з новими викликами — 3 команди
+
+Передумови: Python 3.13 через uv, запущений Ollama з qwen3:1.7b і контекстом 16384. `LOCAL_MODEL` у локальному .env має відповідати картці. Ключ хмарної моделі для цих команд не потрібен.
+
+```powershell
+uv sync --locked
+uv run python -m bench.run --prompt prompts/v4.md --model local --split test
+uv run python scripts/report.py ablation
+```
+
+Runner дописує наступні attempt; report бере останню успішну відповідь/id. Для продовження перерваного виміру додайте `--resume` до другої команди. Повторний прогін може змінити числа; хеші й параметри дозволяють пояснити розбіжність.
+
+## Перегенерація закомічених таблиць без моделей
+
+```powershell
+uv sync --locked
+uv run python scripts/report.py
+```
+
+## Перевірки
+
+```powershell
+uv run pytest
+uv run ruff check .
+uv run python scripts/validate_golden.py --tools data/tool_cases.jsonl
+uv run python scripts/audit.py
+```
+
+`audit.py` повертає ненульовий код за пропущених обов’язкових доказів; це не замінюється зеленими unit tests.
+Повна локальна матриця: `uv run python scripts/benchmark.py --stage all`. Крок 02 повторно запускайте окремими скриптами в нові --out; кроки 03–05 підтримують resume.
+
+## Локальний сервер
+
+```powershell
+$env:OLLAMA_CONTEXT_LENGTH = '16384'
+$env:OLLAMA_NUM_PARALLEL = '1'
+ollama serve
+```
+
+Тримайте сервер запущеним; змінні повинні бути в середовищі процесу сервера. `uv run python scripts/local_probe.py` перевіряє канарку без хмарних викликів. `check_env.py --live` викликає також хмару, тому під час відкладеного Gemini його не запускаємо.
+На машині виконання портативний Ollama встановлено в `%LOCALAPPDATA%/Lab01-Ollama`; бінарні файли й моделі не входять у git.
+
+## Хмара й секрети
+
+Скопіюйте .env.example у .env лише якщо .env ще не існує. Впишіть ключ локально; .env не комітиться. За останньою вказівкою користувача Gemini поки не викликається. Команди для подальшого завершення наведено у docs/lab1/remaining.md.

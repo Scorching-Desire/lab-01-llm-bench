@@ -1,0 +1,8 @@
+{"id": "k01", "input": "Перевірте стан станції M-101 та визначте маршрут звернення.", "expected": "ремонт", "split": "tool", "tags": ["station_status"]}
+{"id": "k02", "input": "Перевірте стан станції M-102 та визначте маршрут звернення.", "expected": "доступ", "split": "tool", "tags": ["station_status"]}
+{"id": "k03", "input": "Перевірте стан оплати бронювання B-201 та визначте маршрут.", "expected": "оплата", "split": "tool", "tags": ["booking_status"]}
+{"id": "k04", "input": "Перевірте стан оплати бронювання B-202 та визначте маршрут.", "expected": "доступ", "split": "tool", "tags": ["booking_status"]}
+{"id": "k05", "input": "Для станції M-103 і бронювання B-203 перевірте обидва стани та визначте маршрут.", "expected": "ремонт", "split": "tool", "tags": ["station_status", "booking_status"]}
+{"id": "k06", "input": "Для станції M-104 і бронювання B-201 перевірте обидва стани та визначте маршрут.", "expected": "оплата", "split": "tool", "tags": ["station_status", "booking_status"]}
+{"id": "k07", "input": "Перевірте стан станції M-999 та визначте маршрут звернення.", "expected": "інше", "split": "tool", "tags": ["station_status"]}
+{"id": "k08", "input": "Перевірте стан бронювання B-INVALID та визначте маршрут.", "expected": "інше", "split": "tool", "tags": ["booking_status"]}
