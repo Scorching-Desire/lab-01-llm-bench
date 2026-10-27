@@ -2,9 +2,12 @@
 import hashlib
 import json
 import subprocess
+import threading
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+
+_append_lock = threading.Lock()
 
 
 @dataclass
@@ -62,8 +65,9 @@ def read_rows(path: str | Path) -> list[dict]:
 def append_row(path: str | Path, row: dict) -> None:
     """Лише дописує рядок у кінець файлу; наявні рядки не змінюються."""
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "a", encoding="utf-8", newline="\n") as f:
-        f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    with _append_lock:
+        with open(path, "a", encoding="utf-8", newline="\n") as f:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
 def utc_now() -> str:

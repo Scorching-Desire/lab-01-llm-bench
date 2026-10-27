@@ -104,9 +104,10 @@ def default_out(a: argparse.Namespace, version: str) -> str:
     return f"results/04-{a.mode}-{a.model}.jsonl" if a.mode else f"results/03-{version}-{a.model}.jsonl"
 
 
-def main(argv: list[str] | None = None) -> None:
+def main(argv: list[str] | None = None, *, concurrency: int = 1, retry_attempts: int = 5, chat=None) -> None:
     load_dotenv()
     a = parse_args(argv)
+    chat_fn = chat or clients.chat
     spec, prompt = models.get(a.model), prompts.load_prompt(a.prompt)
     examples = data.load_jsonl(a.data)
     ids = a.ids.split(",") if a.ids else None
@@ -123,6 +124,8 @@ def main(argv: list[str] | None = None) -> None:
             raise ValueError("changed model or mode: use a new output file")
         if row["model_requested"] != spec.model or row["params"] != {**spec.params, "num_ctx": spec.num_ctx}:
             raise ValueError("changed model ID or parameters: use a new output file")
+        if row["concurrency"] != concurrency:
+            raise ValueError("changed concurrency: use a new output file")
     done = {r["id"] for r in previous if r["error_type"] is None}
     attempts = Counter(r["id"] for r in previous)
     todo = [ex for ex in data.select(examples, split=a.split, tag=a.tag, ids=ids, limit=a.limit)
@@ -133,7 +136,7 @@ def main(argv: list[str] | None = None) -> None:
     common = dict(run_id=run_id, git_sha=data.git_sha(), dataset_sha256=data.sha256_file(a.data),
                   prompt_version=prompt.version, prompt_sha256=prompt.sha256, alias=spec.alias, api=spec.api,
                   model_requested=spec.model, params={**spec.params, "num_ctx": spec.num_ctx},
-                  mode=a.mode or "A", concurrency=1)
+                  mode=a.mode or "A", concurrency=concurrency)
     print(f"{run_id}: {len(todo)} прикладів → {out}")
     for ex in todo:
         messages = prompts.render(prompt, ex, dev)
@@ -141,11 +144,12 @@ def main(argv: list[str] | None = None) -> None:
         start = time.perf_counter()
         if a.tools is None:
             use_schema = schema.TicketLabel if a.mode == "B" else None
-            result, err = with_retries(lambda: clients.chat(spec.alias, messages, schema=use_schema))
+            result, err = with_retries(lambda: chat_fn(spec.alias, messages, schema=use_schema), attempts=retry_attempts)
         else:
             trace = str(out.parent / "traces" / f"{run_id}.jsonl")
             result, err = with_retries(lambda: agent_loop.run_agent(
-                spec.alias, messages, tool_names, run_id=run_id, case_id=ex.id, trace_path=trace, chat=clients.chat))
+                spec.alias, messages, tool_names, run_id=run_id, case_id=ex.id, trace_path=trace, chat=chat_fn),
+                attempts=retry_attempts)
         row["ts"] = data.utc_now()
         if err:  # рядок з error_type не рахується як хибна відповідь
             row.update(error_type=err[0], error=err[1])
