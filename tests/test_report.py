@@ -38,3 +38,12 @@ def test_marker_replacement_is_idempotent(tmp_path):
     assert path.read_bytes() == before
     assert before.split(b"<!-- report:begin")[0] == original.split(b"<!-- report:begin")[0]
     assert before.split(b"<!-- report:end -->")[1] == original.split(b"<!-- report:end -->")[1]
+
+
+def test_no_confidence_interval_without_successful_response():
+    from bench.data import new_row
+    report = module()
+    row = new_row(id="t01", alias="local", model_requested="test", prompt_version="v4", error_type="server")
+    table = report.acc_table({"error.jsonl": [row]}, {})
+    assert "[0.00; 0.00]" not in table
+    assert "server 1" in table

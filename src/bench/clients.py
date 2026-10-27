@@ -58,7 +58,7 @@ def _client(spec: models.ModelSpec):
             key = os.environ.get(spec.key_env or "")
             if not key:
                 raise RuntimeError(f"задайте {spec.key_env} у .env")
-            _clients[spec.alias] = genai.Client(api_key=key, http_options=types.HttpOptions(
+            _clients[spec.alias] = genai.Client(api_key=key, http_options=types.HttpOptions(timeout=600_000,
                 retry_options=types.HttpRetryOptions(attempts=1)))
         else:
             key = os.environ.get(spec.key_env or "") or spec.api_key_default

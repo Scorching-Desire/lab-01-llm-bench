@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from bench import clients, run
 
 PROMPT = "version: v0\n\n## system\nТестовий промпт.\n\n## user\n<<input>>\n"
@@ -59,3 +61,13 @@ def test_rate_limit_becomes_error_row_then_resume(tmp_path, monkeypatch):
     run.main(args + ["--resume"])
     second = rows(out)[1]
     assert second["id"] == "t03" and second["attempt"] == 2 and second["error_type"] is None
+
+
+def test_dispatcher_records_concurrency_and_prevents_mixing(tmp_path):
+    dataset, prompt = make_files(tmp_path)
+    out = tmp_path / "parallel.jsonl"
+    args = ["--prompt", prompt, "--model", "local", "--data", dataset, "--ids", "t01", "--out", str(out)]
+    run.main(args, concurrency=4, retry_attempts=1, chat=fake_chat)
+    assert rows(out)[0]["concurrency"] == 4
+    with pytest.raises(ValueError, match="concurrency"):
+        run.main(args + ["--resume"], concurrency=1, chat=fake_chat)

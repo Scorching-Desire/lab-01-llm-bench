@@ -99,7 +99,7 @@ def acc_table(groups: dict[str, list[dict]], prices: dict) -> str:
         low, high = wilson_ci(k, n)
         tagged = lambda tag: [r for r in ok if tag in r["tags"]]  # noqa: E731
         table.append([name, rows[0]["model_requested"], rows[0]["prompt_version"], n,
-                      f"{k / n:.2f}" if n else "—", f"[{low:.2f}; {high:.2f}]",
+                      f"{k / n:.2f}" if n else "—", f"[{low:.2f}; {high:.2f}]" if n else "—",
                       frac(sum(r["correct"] for r in tagged("hard")), len(tagged("hard"))),
                       frac(sum(r["correct"] for r in tagged("injection")), len(tagged("injection"))),
                       error_summary(rows), f"{cost(ok, prices):.4f}",
@@ -161,7 +161,7 @@ def block_structured(prices: dict) -> str:
         out_tokens = round(statistics.mean(r["output_tokens"] or 0 for r in ok)) if ok else "—"
         low, high = wilson_ci(correct, n)
         table.append([name, rows[0]["api"], rows[0]["mode"], n, frac(valid, n), frac(correct, n), frac(valid_wrong, n),
-                      finish, out_tokens, error_summary(rows), f"[{low:.2f}; {high:.2f}]",
+                      finish, out_tokens, error_summary(rows), f"[{low:.2f}; {high:.2f}]" if n else "—",
                       statistics.median(r["latency_ms"] for r in ok) if ok else "—"])
     headers = ["файл", "api", "режим", "n", "валідні", "правильні", "валідно, але хибно", "finish_reason",
                "вихідних токенів (сер.)", "помилки", "95% ДІ точності", "затримка, мс (медіана)"]

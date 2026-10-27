@@ -79,9 +79,10 @@ def main():
         try:
             return clients.chat(alias, messages, **kwargs)
         except Exception as exc:
-            # Never continue burning quota after a transport/provider error. In-flight
-            # cases finish; cases without a first request are canceled without rows.
-            stop.set()
+            # A 503 may recover with the runner's bounded backoff. Quota/auth errors
+            # stop new cases immediately; exhausted transient errors stop them below.
+            if run.error_type(exc) not in {"server", "timeout"}:
+                stop.set()
             raise exc
 
     def work(task):
@@ -95,6 +96,8 @@ def main():
             return "skipped", stage, case_id
         rows = [r for r in data.read_rows(out) if r["id"] == case_id]
         last = rows[-1]
+        if last["error_type"]:
+            stop.set()
         return last["error_type"] or "ok", stage, case_id
 
     print(f"{batch}: pending={len(tasks)}, max concurrency={a.workers}, max RPM={a.max_rpm}", flush=True)
