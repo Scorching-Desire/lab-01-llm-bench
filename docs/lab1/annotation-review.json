@@ -1,0 +1,15 @@
+{
+  "reviewer": "student (repository owner)",
+  "source": "explicit user message in this chat",
+  "confirmed_at": "2026-10-27T11:13:08.552686+00:00",
+  "confirmation": "Мітки підтверджую.",
+  "golden_labels": 33,
+  "tool_labels": 8,
+  "model_proposed": 41,
+  "student_changed": 0,
+  "dataset_sha256": {
+    "data/golden.jsonl": "18fdb0c1ac278e3c06762e763ee56864a684289d59dbf91040928ae53b3833c3",
+    "data/tool_cases.jsonl": "783a1bf7a70c8522aa34a1aa28514d314c58901f30fd94ca70d80feef22192da"
+  },
+  "note": "Confirmation after some local measurements; no expected values were changed."
+}
