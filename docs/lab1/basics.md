@@ -41,7 +41,7 @@
 |---|---|---|---|
 | local qwen3:1.7b | Перевіряються 0/1 і 7/відсутній | thinking.values=[false,true]; none/high | Власні рядки sampling/reasoning; local-probe.json |
 | local-large qwen3:4b | 0 і seed=7 | none не вимкнув, high явно заданий | Проба на короткому dev-запиті, API show: [true] |
-| Gemini | Параметри вибірки не надсилаються | low у реєстрі; live відкладено | Документація; живих свідчень немає |
+| Gemini | Параметри вибірки не надсилаються | low; живі dev та кроки 03–05 | Відповіді API й usage збережено; окремого Gemini none/high абляційного виміру немає |
 
 Джерела (2026-10-27): https://docs.ollama.com/api/openai-compatibility ; https://docs.ollama.com/capabilities/thinking ; https://ai.google.dev/gemini-api/docs/generate-content/thinking .
 

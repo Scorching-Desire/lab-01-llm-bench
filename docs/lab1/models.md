@@ -25,7 +25,7 @@
 - Ціна реєстру: price_in=0.75, price_out=3.75 USD/1M, price_date=2026-10-27, price_src=https://ai.google.dev/gemini-api/docs/pricing . Це сценарна платна ціна; free tier безкоштовний, запити можуть використовуватися для покращення продуктів.
 - З 2027-01-01 ціна 1.50/7.50. `report.py --price gemini=1.50/7.50 --price gemini-native=1.50/7.50` рахує сценарій без API-викликів.
 - Knowledge cutoff: березень 2026, у деяких доменах січень 2025; дата зняття в використаній model card не вказана.
-- Параметри: low; max_tokens=4096 в обох формах; temperature/top_p/seed не надсилаються. Після відновлення дозволу обидві dev-форми реально повернули правильну відповідь; 146/298 с, native B дав тимчасову 503 і успішний повтор. Повна матриця ще виконується, див. gemini.md.
+- Параметри: low; max_tokens=4096 в обох формах; temperature/top_p/seed не надсилаються. Після відновлення дозволу обидві dev-форми реально повернули правильну відповідь; 146/298 с, native B дав тимчасову 503 і успішний повтор. Пілот зупинено через квоту 20/day; усі test-рядки збережено в exploratory. Для повної матриці окремо вибрано Flash-Lite, див. gemini.md.
 - Джерела: https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash ; https://ai.google.dev/gemini-api/docs/pricing ; https://deepmind.google/models/model-cards/gemini-3-8-flash/ ; https://ai.google.dev/gemini-api/docs/generate-content/thinking
 - `latest-model` уже веде до Gemini 4 Argon; ID лабораторної свідомо зафіксований, автоматичного переходу немає.
 
@@ -52,6 +52,6 @@
 - Google; закриті ваги. Дві форми: OpenAI-сумісна і generateContent. Вхід: текст, зображення, відео, аудіо, PDF; вихід: текст. Контекст 1048576, вихід до 65536.
 - Structured outputs, function calling і thinking підтримуються. Стенд: low, max_tokens=4096, concurrency=1, max RPM=8; параметри вибірки не задаються.
 - Free Tier: вхід/вихід без API-плати; запити можуть використовуватись для покращення продукту. Сценарна стандартна платна ціна реєстру: price_in=0.25, price_out=1.50 USD/1M для тексту; price_date=2026-10-27; price_src=https://ai.google.dev/gemini-api/docs/pricing .
-- Квоту слід перевіряти власними запитами; успішна dev-проба не доводить доступність усієї добової матриці. Дату зняття у використаній API-сторінці не вказано; cutoff див. офіційну model card.
+- Квоту слід перевіряти власними запитами; успішна dev-проба не доводить доступність усієї добової матриці. Дата зняття не вказана. Окреме відсічення знань Flash-Lite у використаній model card не опубліковано: вона відсилає до Gemini 3 Pro; дату не вгадуємо.
 - Джерела (2026-10-27): https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite ; https://ai.google.dev/gemini-api/docs/pricing ; https://deepmind.google/models/model-cards/gemini-3-1-flash-lite/ .
 - Вибрано до test у cloud-selection.json через quota 20/day і 146–298 с на 3.8. Старі 3.8-виміри збережені окремо, ID у рядках не змінюється. Це зміна кандидата через доступність, а не за точністю на test.

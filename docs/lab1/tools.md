@@ -8,6 +8,8 @@ max_steps=6, token_budget=20000; історія щоразу надсилаєт�
 <!-- report:begin tools -->
 | файл | інструменти | n | правильні | потрібні інструменти викликано | валідні аргументи | кроків (сер.) | причини зупинки | збої |
 |---|---|---|---|---|---|---|---|---|
+| 05-t1-gemini-lite-native-notools.jsonl | ні | 8 | 1/8 | 0/8 | — | 1.0 | final 8 | tool_call_in_text 4 |
+| 05-t1-gemini-lite-native-tools.jsonl | так | 8 | 8/8 | 8/8 | 10/10 | 2.0 | final 8 | tool_error 1 |
 | 05-t1-local-fast-notools.jsonl | ні | 8 | 1/8 | 0/8 | — | 1.0 | final 8 | — |
 | 05-t1-local-fast-tools.jsonl | так | 8 | 2/8 | 0/8 | — | 1.0 | final 8 | — |
 | 05-t1-local-notools.jsonl | ні | 8 | 2/8 | 0/8 | — | 1.0 | final 8 | — |
@@ -20,13 +22,17 @@ Local: 6/8 з інструментами проти 2/8 без; потрібні
 
 Local-fast: нативних викликів 0, тому валідність аргументів — «—», а не 100%. Інструменти були передані, але модель віддала фінальну відповідь без них: 2/8 проти 1/8 без tools. Це спостереження про слабку модель, а не успішний агент.
 
+Gemini Flash-Lite: 8/8 з tools [0.68;1.00] проти 1/8 без [0.02;0.47], інтервали не перетинаються. Потрібні інструменти викликано 8/8, аргументи 10/10, середня кількість кроків 2.0; усі цикли завершені final. Без tools чотири відповіді містили текстову імітацію виклику, яку зафіксовано як tool_call_in_text і не виконано. Решта хибних відповідей також лишилися в оцінці. H3 була зафіксована для local; додатковий позитивний результат Gemini не змінює її заднім числом.
+
+У Gemini k08 повернув справжній [tool_error на рядку 17](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/32cb7b419475297e3ae7ed3816bdb1f0fec7cf67/results/traces/2026-10-27T12-12-34Z_cloud_c8ca25e6_05-tools.jsonl#L17), після чого модель завершила правильною міткою інше на рядку 18. Для k07 відсутня станція також привела до інше (рядки 15–16). Це відповіді після отримання стану; самі номери M-101/M-102 не містять необхідних фактів.
+
 Конкретні траси:
 
 - k04: [правильний стан «оплачено», рядок 7](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L7) → [хибна оплата, рядок 8](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L8). Це помилка застосування правила 9, не інструмента.
 - k05: [стан несправна, рядок 9](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L9) і [не оплачено, рядок 10](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L10) → [оплата, рядок 11](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L11): порушено пріоритет ремонту.
 - k08: [tool_error, рядок 17](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L17) → [правильне інше, рядок 18](https://github.com/Scorching-Desire/lab-01-llm-bench/blob/ebfadcdaba2ee7575c294c9656a86785c5b5ef88/results/traces/2026-10-27T11-11-20Z_t1_local_725c2ceb.jsonl#L18). Тип аргументу валідний, бізнес-формат B-INVALID неправильний; цикл продовжився.
 
-Додаткові поля у фінальній tool-відповіді не впливають на label accuracy; на кроці 05 строга схема фінальної відповіді не застосовується. На кроці 04 такі поля були б невалідними. Gemini не викликався.
+Додаткові поля у фінальній tool-відповіді не впливають на label accuracy; на кроці 05 строга схема фінальної відповіді не застосовується. На кроці 04 такі поля були б невалідними. Усі 48 кейсів для трьох моделей із/без tools завершені; transport errors у головній матриці немає. Пілотний Gemini 3.8 до цих чисел не входить.
 
 ## Чому це може не відтворитися
 Лише 8 синтетичних кейсів і 2 локальні моделі однієї сім’ї. Неправильні аргументи й текстовий виклик інструмента є виміряними збоями, а не прихованими успіхами. Зміна таблиць tools.py вимагає нових результатів і фіксації версії коду.

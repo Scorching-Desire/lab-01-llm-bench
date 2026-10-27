@@ -43,11 +43,18 @@ $env:OLLAMA_NUM_PARALLEL = '1'
 ollama serve
 ```
 
-Тримайте сервер запущеним; змінні повинні бути в середовищі процесу сервера. `python -m uv run python scripts/local_probe.py` перевіряє канарку без хмарних викликів. `check_env.py --live` викликає також хмару, тому під час відкладеного Gemini його не запускаємо.
+Тримайте сервер запущеним; змінні повинні бути в середовищі процесу сервера. `python -m uv run python scripts/local_probe.py` перевіряє канарку без хмарних викликів. `check_env.py --live` викликає також хмару й витрачає квоту; для відновлення вимірів використовуйте вибраний alias у cloud_benchmark.py.
 На машині виконання портативний Ollama встановлено в `%LOCALAPPDATA%/Lab01-Ollama`; бінарні файли й моделі не входять у git.
 
 ## Хмара й секрети
 
-Скопіюйте .env.example у .env лише якщо .env ще не існує. Впишіть ключ локально; .env не комітиться. Користувач відновив дозвіл на Gemini: реальні dev-проби успішні, cloud matrix запущено; умови та 503 high-demand описані у docs/lab1/gemini.md. Повнота залежить від audit.md. Команди відновлення — remaining.md.
+Скопіюйте .env.example у .env лише якщо .env ще не існує. Впишіть ключ локально; .env не комітиться. Реальні Gemini-прогони та обмеження пілота 3.8 описані у [gemini.md](docs/lab1/gemini.md). Основний хмарний кандидат — окремо зафіксований gemini-3.1-flash-lite. Повноту доказів перевіряє [audit.md](docs/lab1/audit.md).
+
+Для відновлення вибраної хмарної матриці з уже отриманих відповідей:
+```powershell
+python -m uv run python scripts/cloud_benchmark.py --family lite --workers 1 --max-rpm 8
+python -m uv run python scripts/report.py
+```
+Диспетчер пропускає успішні id. Для нового незалежного вимірювання потрібні окремі вихідні файли; не видаляйте старі результати.
 
 Для ручного чат-порівняння: [покрокова інструкція](docs/lab1/chat-guide.md), [5 готових промптів](docs/lab1/chat/prompts/).

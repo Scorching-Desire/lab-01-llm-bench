@@ -15,22 +15,22 @@
 | 03 v1 local-fast | OK | 25/25 unique successful ids |
 | 03 v2 local-fast | OK | 25/25 unique successful ids |
 | 03 v4 local-fast | OK | 25/25 unique successful ids |
-| 03 v0 gemini | MISSING | 0/15 unique successful ids |
-| 03 v1 gemini | MISSING | 0/15 unique successful ids |
-| 03 v2 gemini | MISSING | 0/15 unique successful ids |
-| 03 v4 gemini | MISSING | 0/15 unique successful ids |
+| 03 v0 gemini-lite | OK | 15/15 unique successful ids |
+| 03 v1 gemini-lite | OK | 15/15 unique successful ids |
+| 03 v2 gemini-lite | OK | 15/15 unique successful ids |
+| 03 v4 gemini-lite | OK | 15/15 unique successful ids |
 | 04 A local | OK | 25/25 successful ids |
 | 04 B local | OK | 25/25 successful ids |
 | 04 A local-fast | OK | 25/25 successful ids |
 | 04 B local-fast | OK | 25/25 successful ids |
-| 04 A gemini-native | MISSING | 0/15 successful ids |
-| 04 B gemini-native | MISSING | 0/15 successful ids |
+| 04 A gemini-lite-native | OK | 15/15 successful ids |
+| 04 B gemini-lite-native | OK | 15/15 successful ids |
 | 05 tools local | OK | 8/8 successful ids |
 | 05 notools local | OK | 8/8 successful ids |
 | 05 tools local-fast | OK | 8/8 successful ids |
 | 05 notools local-fast | OK | 8/8 successful ids |
-| 05 tools gemini-native | MISSING | 0/8 successful ids |
-| 05 notools gemini-native | MISSING | 0/8 successful ids |
+| 05 tools gemini-lite-native | OK | 8/8 successful ids |
+| 05 notools gemini-lite-native | OK | 8/8 successful ids |
 | Chat comparison screenshots | MISSING | 0 PNG files; manual 4x5 response review also required |
 | Student label review | OK | explicit student confirmation and matching dataset hashes in annotation-review.json |
 | Group registration | MISSING | user will add it manually; no confirmation recorded |
