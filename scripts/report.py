@@ -157,10 +157,12 @@ def block_structured(prices: dict) -> str:
         valid_wrong = sum(bool(r["schema_valid"]) and not r["correct"] for r in ok)
         finish = ", ".join(f"{f} {c}" for f, c in sorted(Counter(str(r["finish_reason"]) for r in ok).items()))
         out_tokens = round(statistics.mean(r["output_tokens"] or 0 for r in ok)) if ok else "—"
+        low, high = wilson_ci(correct, n)
         table.append([name, rows[0]["api"], rows[0]["mode"], n, frac(valid, n), frac(correct, n), frac(valid_wrong, n),
-                      finish, out_tokens, error_summary(rows)])
+                      finish, out_tokens, error_summary(rows), f"[{low:.2f}; {high:.2f}]",
+                      statistics.median(r["latency_ms"] for r in ok) if ok else "—"])
     headers = ["файл", "api", "режим", "n", "валідні", "правильні", "валідно, але хибно", "finish_reason",
-               "вихідних токенів (сер.)", "помилки"]
+               "вихідних токенів (сер.)", "помилки", "95% ДІ точності", "затримка, мс (медіана)"]
     return md_table(headers, table) if table else NO_DATA
 
 

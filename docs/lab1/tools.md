@@ -8,6 +8,8 @@ max_steps=6, token_budget=20000; історія щоразу надсилаєт�
 <!-- report:begin tools -->
 | файл | інструменти | n | правильні | потрібні інструменти викликано | валідні аргументи | кроків (сер.) | причини зупинки | збої |
 |---|---|---|---|---|---|---|---|---|
+| 05-t1-local-fast-notools.jsonl | ні | 8 | 1/8 | 0/8 | — | 1.0 | final 8 | — |
+| 05-t1-local-fast-tools.jsonl | так | 8 | 2/8 | 0/8 | — | 1.0 | final 8 | — |
 | 05-t1-local-notools.jsonl | ні | 8 | 2/8 | 0/8 | — | 1.0 | final 8 | — |
 | 05-t1-local-tools.jsonl | так | 8 | 6/8 | 8/8 | 10/10 | 2.0 | final 8 | tool_error 1 |
 <!-- report:end -->

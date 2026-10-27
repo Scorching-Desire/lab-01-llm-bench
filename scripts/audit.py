@@ -1,6 +1,7 @@
 """Check the official evidence package; missing evidence is a failure, never a fabricated pass."""
 import argparse
 import hashlib
+import json
 import subprocess
 from functools import lru_cache
 from pathlib import Path
@@ -84,7 +85,12 @@ def main():
             add(f"05 {mode} {alias}", count == 8, f"{count}/8 successful ids")
     screenshots = list(Path("docs/lab1/chat").glob("*.png"))
     add("Chat comparison screenshots", len(screenshots) >= 4, f"{len(screenshots)} PNG files; manual 4x5 response review also required")
-    add("Student label review", False, "requires student's own verified annotation; AI cannot attest to it")
+    review_path = Path("docs/lab1/annotation-review.json")
+    review = json.loads(review_path.read_text(encoding="utf-8")) if review_path.exists() else {}
+    reviewed = (review.get("golden_labels") == 33 and review.get("tool_labels") == 8
+                and all(data.sha256_file(path) == digest for path, digest in review.get("dataset_sha256", {}).items())
+                and len(review.get("dataset_sha256", {})) == 2)
+    add("Student label review", reviewed, "explicit student confirmation and matching dataset hashes in annotation-review.json")
     add("Group registration", False, "user will add it manually; no confirmation recorded")
     add("Weekly snapshots and oral defense", False, "historical attendance/snapshots and personal defense cannot be manufactured")
     table = "| Check | Status | Evidence |\n|---|---|---|\n" + "\n".join(
