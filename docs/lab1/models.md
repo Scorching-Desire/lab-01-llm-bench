@@ -5,7 +5,7 @@
 ## local · qwen3:1.7b
 - Провайдер ваг: Qwen/Alibaba; рушій Ollama 0.40.11. Роль: основна локальна модель з перемиканням міркування.
 - Відкриті ваги, Apache-2.0. Вхід/вихід: текст/текст. Контекст ваг: 32768; фактично стенд: 16384.
-- API: openai_chat; temperature=0, seed=7, reasoning_effort=none, max_tokens=4096. Tools/schema/thinking підтримуються.
+- API: openai_chat; temperature=0, seed=7, reasoning_effort=none, max_tokens=512. Tools/schema/thinking підтримуються.
 - price_in=0, price_out=0 USD/1M; без API-плати (електроенергія і придбання GPU не оцінювались). Дані локальні.
 - Відсічення знань і дата зняття: не опубліковано у використаній картці.
 - Джерела: https://huggingface.co/Qwen/Qwen3-1.7B ; https://ollama.com/library/qwen3:1.7b ; https://docs.ollama.com/api/openai-compatibility

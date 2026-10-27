@@ -46,7 +46,7 @@
 Джерела (2026-10-27): https://docs.ollama.com/api/openai-compatibility ; https://docs.ollama.com/capabilities/thinking ; https://ai.google.dev/gemini-api/docs/generate-content/thinking .
 
 ## Висновок для кроку 03
-Основна модель local=qwen3:1.7b, temperature=0, seed=7, reasoning_effort=none, max_tokens=4096, num_ctx=16384. За виміром none і high дали однакові 6/10, але high потребував 284.1 вихідних токенів проти 7.6 і медіани 1823.5 мс проти 72.5 мс. Тому обрано none: користі точності на цьому n не виявлено. 4B не використовується для none/high через встановлений шаблон.
+Основна модель local=qwen3:1.7b, temperature=0, seed=7, reasoning_effort=none, max_tokens=512, num_ctx=16384. За виміром none і high дали однакові 6/10, але high потребував 284.1 вихідних токенів проти 7.6 і медіани 1823.5 мс проти 72.5 мс. Тому обрано none: користі точності на цьому n не виявлено. 4B не використовується для none/high через встановлений шаблон.
 
 ## Чому це може не відтворитися
 Лише 10 мовних пар, один hard у sampling і 10 hard у reasoning. Теги моделі можуть змінитися: digest та контекст збережено в local-probe.json. Міркування обирається на test — це загроза валідності подальшого вибору; потрібен новий незалежний набір.

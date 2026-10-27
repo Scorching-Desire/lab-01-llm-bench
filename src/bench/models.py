@@ -34,7 +34,7 @@ MODELS: dict[str, ModelSpec] = {
     "local": ModelSpec(
         alias="local", api="openai_chat", model="qwen3:1.7b",
         base_url="http://localhost:11434/v1", key_env=None, api_key_default="ollama",
-        num_ctx=16384, params={"temperature": 0, "seed": 7, "reasoning_effort": "none", "max_tokens": 4096},
+        num_ctx=16384, params={"temperature": 0, "seed": 7, "reasoning_effort": "none", "max_tokens": 512},
         caps={"tools": True, "json_schema": True, "reasoning_control": True},
         price_src="https://ollama.com/library/qwen3", price_date="2026-10-27", trains_on_data=False,
     ),
