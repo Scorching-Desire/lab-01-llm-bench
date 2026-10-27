@@ -50,7 +50,7 @@
 
 ## gemini-lite / gemini-lite-native · gemini-3.1-flash-lite
 - Google; закриті ваги. Дві форми: OpenAI-сумісна і generateContent. Вхід: текст, зображення, відео, аудіо, PDF; вихід: текст. Контекст 1048576, вихід до 65536.
-- Structured outputs, function calling і thinking підтримуються. Стенд: low, max_tokens=4096, concurrency=1, max RPM=10; параметри вибірки не задаються.
+- Structured outputs, function calling і thinking підтримуються. Стенд: low, max_tokens=4096, concurrency=1, max RPM=8; параметри вибірки не задаються.
 - Free Tier: вхід/вихід без API-плати; запити можуть використовуватись для покращення продукту. Сценарна стандартна платна ціна реєстру: price_in=0.25, price_out=1.50 USD/1M для тексту; price_date=2026-10-27; price_src=https://ai.google.dev/gemini-api/docs/pricing .
 - Квоту слід перевіряти власними запитами; успішна dev-проба не доводить доступність усієї добової матриці. Дату зняття у використаній API-сторінці не вказано; cutoff див. офіційну model card.
 - Джерела (2026-10-27): https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite ; https://ai.google.dev/gemini-api/docs/pricing ; https://deepmind.google/models/model-cards/gemini-3-1-flash-lite/ .

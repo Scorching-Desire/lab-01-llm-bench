@@ -56,6 +56,10 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out")
     a = ap.parse_args()
+    selection_path = Path("docs/lab1/cloud-selection.json")
+    selection = json.loads(selection_path.read_text(encoding="utf-8")) if selection_path.exists() else {}
+    cloud_compatible = selection.get("openai_alias", "gemini")
+    cloud_native = selection.get("native_alias", "gemini-native")
     rows = []
 
     def add(name, ok, detail):
@@ -68,19 +72,19 @@ def main():
     for name, minimum in [("tokens", 20), ("sampling", 40), ("reasoning", 20)]:
         result = data.read_rows(f"results/02-{name}.jsonl")
         add(f"02 {name}", len(result) >= minimum, f"{len(result)} rows, need >= {minimum}")
-    for alias in ("local", "local-fast", "gemini"):
+    for alias in ("local", "local-fast", cloud_compatible):
         target = 25 if alias.startswith("local") else 15
         for version in ("v0", "v1", "v2", "v4"):
             result = data.read_rows(f"results/03-{version}-{alias}.jsonl")
             count = len({r["id"] for r in result if not r["error_type"]})
             add(f"03 {version} {alias}", count == target, f"{count}/{target} unique successful ids")
-    for alias in ("local", "local-fast", "gemini-native"):
+    for alias in ("local", "local-fast", cloud_native):
         target = 25 if alias.startswith("local") else 15
         for mode in ("A", "B"):
             result = data.read_rows(f"results/04-{mode}-{alias}.jsonl")
             count = len({r["id"] for r in result if not r["error_type"]})
             add(f"04 {mode} {alias}", count == target, f"{count}/{target} successful ids")
-    for alias in ("local", "local-fast", "gemini-native"):
+    for alias in ("local", "local-fast", cloud_native):
         for mode in ("tools", "notools"):
             result = data.read_rows(f"results/05-t1-{alias}-{mode}.jsonl")
             count = len({r["id"] for r in result if not r["error_type"]})

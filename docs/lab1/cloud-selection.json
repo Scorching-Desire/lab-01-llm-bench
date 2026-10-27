@@ -6,5 +6,5 @@
   "selected_at": "2026-10-27T12:09:50.382559+00:00",
   "reason": "Gemini 3.8 Flash returned server high-demand errors and quota 20 requests/day. Flash-Lite REST dev connectivity probe succeeded in 1.77 s. Selection precedes any Flash-Lite test measurement.",
   "concurrency": 1,
-  "max_rpm": 10
+  "max_rpm": 8
 }

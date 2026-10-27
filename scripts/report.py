@@ -37,6 +37,7 @@ def load_rows(pattern: str) -> list[dict]:
     """Усі рядки файлів за шаблоном (у стабільному порядку); поле _file — назва файлу."""
     # Top-level globs exclude dev tuning and the explicitly interrupted 4B latency pilot
     # in results/exploratory/. Its raw rows are retained, but it is not a complete test matrix.
+    # The quota-limited Gemini 3.8 pilot is also retained there without row changes.
     # results/reproduction/ is an independent clean-clone check; mixing it into the frozen
     # main experiment would replace its measured latency and duplicate the original rows.
     rows = []
@@ -132,6 +133,13 @@ def block_tokens(prices: dict) -> str:
 
 def block_ablation(prices: dict) -> str:
     groups = by_file(load_rows("results/03-*.jsonl"))
+    return acc_table(groups, prices) if groups else NO_DATA
+
+
+def block_ablation_q15(prices: dict) -> str:
+    groups = {name: [r for r in rows if "q15" in r["tags"]]
+              for name, rows in by_file(load_rows("results/03-*.jsonl")).items()}
+    groups = {name: rows for name, rows in groups.items() if rows}
     return acc_table(groups, prices) if groups else NO_DATA
 
 
@@ -239,6 +247,7 @@ BLOCKS = {
     "sampling": ("docs/lab1/basics.md", block_sampling),
     "reasoning": ("docs/lab1/basics.md", block_reasoning),
     "ablation": ("docs/lab1/prompts.md", block_ablation),
+    "ablation_q15": ("docs/lab1/prompts.md", block_ablation_q15),
     "injection": ("docs/lab1/prompts.md", block_injection),
     "flips": ("docs/lab1/prompts.md", block_flips),
     "structured": ("docs/lab1/structured.md", block_structured),
