@@ -153,7 +153,6 @@ def main(argv: list[str] | None = None, *, concurrency: int = 1, retry_attempts:
             from bench.service import benchmark_row
 
             row = benchmark_row(ex, prompt, common, attempts[ex.id] + 1, a.repair, chat_fn, out)
-            row["repair_enabled"] = a.repair
             data.append_row(out, row)
             print(f"  {ex.id}: {row['error_type'] or row['correct']}", flush=True)
             if a.max_rpm:

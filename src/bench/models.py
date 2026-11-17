@@ -28,6 +28,12 @@ MODELS: dict[str, ModelSpec] = {
         base_url="http://localhost:11434/v1", key_env=None, api_key_default="ollama", num_ctx=16384,
         params={"temperature": 0, "seed": 7, "max_tokens": 512}, caps={"image": True, "json_schema": True},
     ),
+    "local-vision-extract": ModelSpec(
+        alias="local-vision-extract", api="openai_chat", model="bonsai-2:2b",
+        base_url="http://localhost:11434/v1", key_env=None, api_key_default="ollama", num_ctx=16384,
+        params={"temperature": 0, "seed": 7, "reasoning_effort": "none", "max_tokens": 1536},
+        caps={"image": True, "json_schema": True},
+    ),
     "gemini-lite": ModelSpec(
         alias="gemini-lite", api="openai_chat", model="gemini-3.1-flash-lite",
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/", key_env="GEMINI_API_KEY",

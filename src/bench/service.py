@@ -77,7 +77,8 @@ def benchmark_row(example, prompt, common, attempt, repair, chat, out):
 
     row = data.new_row(**common, id=example.id, src_id=example.src_id, split=example.split,
                        tags=example.tags, channel=example.channel, media=example.input_file,
-                       media_sha256=example.input_sha256, variant=example.variant, attempt=attempt)
+                       media_sha256=example.input_sha256, variant=example.variant, attempt=attempt,
+                       repair_enabled=repair, fields_correct=None, verify=None)
     start = time.perf_counter()
     # The service sees only the input document. Scoring runs after extraction.
     document = replace(example, expected=None)

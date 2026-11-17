@@ -100,22 +100,26 @@ def gen(_):
 def verify(_):
     entries = []
     for name, group in rows("05-*.jsonl"):
-        flagged = hit = broken = rescued = wrong = correct = 0
+        flagged = hit = broken = rescued = invalid = 0
         for row in group:
             verification = row["verify"]
+            if verification["status"] == "invalid":
+                invalid += 1
+                continue
             before = verification["fields_correct_before"]
             incorrect = {key for key, value in before.items() if value in {"missing", "spurious", "wrong"}}
             flags = verification["flags_before"]
-            correct += not incorrect
-            wrong += bool(incorrect)
-            flagged += bool(flags)
+            if not flags:
+                continue
+            flagged += 1
             hit += any(incorrect.intersection(flag["fields"]) for flag in flags)
-            rescued += bool(incorrect) and row["correct"]
+            rescued += verification["status"] == "verified" and row["correct"]
             broken += not incorrect and not row["correct"]
-        entries.append([name, len(group), fraction(hit, flagged), fraction(rescued, wrong),
-                        fraction(broken, correct), statistics.median(r["latency_ms"] for r in group) if group else "—"])
-    return table(["Прогін", "n", "Прапорці з помилкою / усі прапорці за документами",
-                  "Виправлено / хибні до ремонту", "Зламано / правильні до ремонту", "Медіана мс"], entries)
+        entries.append([name, len(group), invalid, fraction(hit, flagged), fraction(rescued, flagged),
+                        fraction(broken, flagged), statistics.median(r["latency_ms"] for r in group) if group else "—"])
+    return table(["Прогін", "n", "Невалідні", "Справжня помилка / спрацьовування",
+                  "Усі поля правильні й verified / спрацьовування",
+                  "Зламано ремонтом / спрацьовування", "Медіана мс"], entries)
 
 
 BLOCKS = {
