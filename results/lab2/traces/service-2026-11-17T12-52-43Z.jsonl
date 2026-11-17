@@ -1,0 +1,1 @@
+{"id": "s019.clean", "step": 1, "output": "{\"doc_no\": \"MS-1019\", \"total\": 241.8, \"issued_on\": \"2026-01-30\", \"items\": [\"Фільтр\"], \"note\": \"Огляд у навчальній майстерні\", \"label\": \"інше\"}", "latency_ms": 4439, "finish_reason": "stop"}

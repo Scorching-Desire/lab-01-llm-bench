@@ -1,0 +1,1 @@
+{"id": "s008.clean", "step": 1, "output": "{\n  \"doc_no\": \"MS-1008\",\n  \"total\": 53126,\n  \"issued_on\": \"2026-02-02\",\n  \"items\": [\n    \"Кабель\"\n  ],\n  \"note\": null,\n  \"label\": \"ремонт\"\n}", "latency_ms": 3444, "finish_reason": "stop"}

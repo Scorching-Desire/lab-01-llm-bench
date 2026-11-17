@@ -122,6 +122,7 @@ def main():
     parser.add_argument("--model", default="local-vision-extract")
     parser.add_argument("--mode", choices=["A", "B"], default="B")
     parser.add_argument("--prompt", default="prompts/lab2-fields-v1.md")
+    parser.add_argument("--no-repair", action="store_true")
     parser.add_argument("--out")
     args = parser.parse_args()
     path = Path(args.path)
@@ -136,7 +137,8 @@ def main():
                   dataset_sha256=data.sha256_file(path), prompt_version=prompt.version, prompt_sha256=prompt.sha256,
                   alias=spec.alias, api=spec.api, model_requested=spec.model, mode=args.mode,
                   params={**spec.params, "num_ctx": spec.num_ctx}, concurrency=1)
-    row = benchmark_row(example, prompt, common, 1, True, clients.chat, args.out or "results/lab2/service.jsonl")
+    row = benchmark_row(example, prompt, common, 1, not args.no_repair, clients.chat,
+                        args.out or "results/lab2/service.jsonl")
     if args.out:
         data.append_row(args.out, row)
     print(json.dumps(row, ensure_ascii=False))

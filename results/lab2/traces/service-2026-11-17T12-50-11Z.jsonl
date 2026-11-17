@@ -1,0 +1,1 @@
+{"id": "s019.clean", "step": 1, "output": "{\n  \"doc_no\": \"MS-1019\",\n  \"total\": 241.8,\n  \"issued_on\": \"2026-01-30\",\n  \"items\": [\n    \"Фільтр\"\n  ],\n  \"note\": null,\n  \"label\": \"ремонт\"\n}", "latency_ms": 3477, "finish_reason": "stop"}

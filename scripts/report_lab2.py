@@ -70,9 +70,15 @@ def mod_flips(_):
     return compare(groups, "text")
 
 
-def fields(_):
+def fields(prices):
     entries = []
+    performance = []
     for name, group in rows("04-fields-*.jsonl"):
+        costs = [cost(row, prices) for row in group]
+        if group:
+            performance.append([name, len(group), sum(r["schema_valid"] for r in group),
+                                statistics.median(r["latency_ms"] for r in group),
+                                f"${statistics.mean(costs):.6f}" if all(c is not None for c in costs) else "—"])
         for key in score.FIELD_RULES:
             codes = [r["fields_correct"][key] for r in group]
             precision = recall = "—"
@@ -84,14 +90,15 @@ def fields(_):
         for label, k in [("точний збіг документа", sum(r["correct"] for r in group)),
                          ("валідно, але хибно", sum(r["schema_valid"] and not r["correct"] for r in group))]:
             entries.append([name, label, len(group), fraction(k, len(group)), "—", "—"])
-    return table(["Прогін", "Поле", "n", "Частка і 95% ДІ", "Precision", "Recall"], entries)
+    return (table(["Прогін", "Поле", "n", "Частка і 95% ДІ", "Precision", "Recall"], entries)
+            + "\n\n" + table(["Прогін", "n", "Валідні", "Медіана мс", "$/документ"], performance))
 
 
 def gen(_):
     groups = defaultdict(dict)
     for _, group in rows("04-gen-*.jsonl"):
         for row in group:
-            groups[row["alias"], row["variant"]][row["src_id"]] = row["correct"]
+            groups[f"{row['alias']} · {row['prompt_version']}", row["variant"]][row["src_id"]] = row["correct"]
     first = table(["Модель", "Варіант", "n", "Точний збіг і 95% ДІ"],
                   [[m, v, len(g), fraction(sum(g.values()), len(g))] for (m, v), g in sorted(groups.items())])
     return first + "\n\n" + compare(groups, "plain")

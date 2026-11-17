@@ -4,6 +4,24 @@ Lab 01: відтворюваний LLM bench для маршрутизації �
 [Офіційне завдання](https://koldovsky.github.io/2026-2027-practical-genai-agentic-course/labs/01-llm-bench).
 Звіт і чесний статус кожної вимоги: [docs/lab1/README.md](docs/lab1/README.md).
 
+## Lab 02 · Витяг полів із квитанцій makerspace
+
+[Звіт Lab 02](docs/lab2/README.md) і [офіційне завдання](https://koldovsky.github.io/2026-2027-practical-genai-agentic-course/labs/02-genai-service/).
+Дві команди відтворюють головну таблицю із сирих вимірів. API-ключ для звіту не потрібен.
+
+```powershell
+python -m uv sync --locked
+python -m uv run python scripts/report.py modality mod_flips fields gen verify
+```
+
+Живий запуск рекомендованої конфігурації потребує локально налаштованого `GEMINI_API_KEY`.
+
+```powershell
+python -m uv run python -m bench.service --in data/lab2/media/s008.clean.png --model gemini-lite-native --mode B --no-repair
+```
+
+Для автономного запуску встановіть `bonsai-2:2b` в Ollama та задайте `--model local-vision-extract --prompt prompts/lab2-fields-v2.md`. Виміряна точність цієї конфігурації наведена у [звіті за полями](docs/lab2/fields.md).
+
 ## Відтворення головної таблиці з новими викликами — 3 команди
 
 Передумови: Python 3.13 через uv, запущений Ollama з qwen3:1.7b і контекстом 16384. `LOCAL_MODEL` у локальному .env має відповідати картці. Ключ хмарної моделі для цих команд не потрібен. `python -m uv` використано, щоб команди працювали й без uv.exe у PATH; потрібен установленний пакет uv (`python -m pip install --user uv`).

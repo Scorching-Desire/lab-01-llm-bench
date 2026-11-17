@@ -1,0 +1,1 @@
+{"id": "s011.clean", "step": 1, "output": "{\n  \"doc_no\": \"MS-1011\",\n  \"total\": 2339.59,\n  \"issued_on\": \"2026-09-13\",\n  \"items\": [\n    \"Зчитувач\",\n    \"Фільтр\",\n    \"Кабель\",\n    \"Втулка\",\n    \"Адаптер\",\n    \"Ролік\"\n  ],\n  \"note\": null,\n  \"label\": \"оплата\"\n}", "latency_ms": 3767, "finish_reason": "stop"}
