@@ -78,14 +78,21 @@ def rasterize(pdf_path: str, out_dir: str, dpi: int = 150, max_side: int = MAX_S
 
 def encode(path: str) -> tuple[str, bytes]:
     """(mime, сирі байти) з перевіркою межі — спільний вхід для обох форм API."""
-    raw = Path(path).read_bytes()
+    source = Path(path)
+    try:
+        with source.open("rb") as file:
+            raw = file.read(MAX_BYTES + 1)
+    except OSError as exc:
+        raise MediaError(f"{path}: image cannot be read") from exc
     if len(raw) > MAX_BYTES:
-        raise MediaError(f"{path}: {len(raw)} Б > {MAX_BYTES} Б")
+        raise MediaError(f"{path}: файл перевищує {MAX_BYTES} Б")
     mime = mimetypes.guess_type(path)[0]
     if mime not in OK_MIME:
         raise MediaError(f"{path}: тип {mime!r} не з {OK_MIME}")
     try:
-        with Image.open(Path(path)) as image:
+        from io import BytesIO
+
+        with Image.open(BytesIO(raw)) as image:
             if Image.MIME.get(image.format) != mime or max(image.size) > MAX_SIDE:
                 raise MediaError(f"{path}: incorrect MIME or image dimensions")
             image.verify()
