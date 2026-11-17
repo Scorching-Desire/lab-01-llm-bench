@@ -126,6 +126,8 @@ def main(argv: list[str] | None = None, *, concurrency: int = 1, retry_attempts:
     previous = data.read_rows(out)  # файл лише дописується: рядки не переписуються
     dataset_hash = data.sha256_file(a.data)
     for row in previous:
+        if lab2 and (row.get("channel") != a.channel or row.get("repair_enabled", False) != a.repair):
+            raise ValueError("changed channel or repair policy: use a new output file")
         if row["dataset_sha256"] != dataset_hash or row["prompt_sha256"] != prompt.sha256:
             raise ValueError("changed dataset or prompt: use a new output file")
         if row["alias"] != spec.alias or row["mode"] != (a.mode or "A"):
@@ -151,6 +153,7 @@ def main(argv: list[str] | None = None, *, concurrency: int = 1, retry_attempts:
             from bench.service import benchmark_row
 
             row = benchmark_row(ex, prompt, common, attempts[ex.id] + 1, a.repair, chat_fn, out)
+            row["repair_enabled"] = a.repair
             data.append_row(out, row)
             print(f"  {ex.id}: {row['error_type'] or row['correct']}", flush=True)
             if a.max_rpm:

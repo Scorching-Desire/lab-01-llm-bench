@@ -20,6 +20,14 @@ dependencies = [
 [project.scripts]
 bench = "bench.run:main"
 
+[project.optional-dependencies]
+imagegen = [
+    "accelerate>=1.16.0",
+    "diffusers>=0.43.0",
+    "torch>=2.15.0",
+    "transformers>=5.23.0",
+]
+
 [build-system]
 requires = ["uv_build>=0.13.6,<0.14.0"]
 build-backend = "uv_build"

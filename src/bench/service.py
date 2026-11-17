@@ -77,7 +77,7 @@ def benchmark_row(example, prompt, common, attempt, repair, chat, out):
 
     row = data.new_row(**common, id=example.id, src_id=example.src_id, split=example.split,
                        tags=example.tags, channel=example.channel, media=example.input_file,
-                       media_sha256=example.input_sha256, attempt=attempt)
+                       media_sha256=example.input_sha256, variant=example.variant, attempt=attempt)
     start = time.perf_counter()
     # The service sees only the input document. Scoring runs after extraction.
     document = replace(example, expected=None)
@@ -94,6 +94,13 @@ def benchmark_row(example, prompt, common, attempt, repair, chat, out):
     for name in ("input", "output", "reasoning", "cached"):
         counts = [getattr(t.usage, name) for t in turns if getattr(t.usage, name) is not None]
         row[f"{name}_tokens"] = sum(counts) if counts else None
+    if verification is not None:
+        row["verify"] = verification
+    if repair and verification is not None:
+        trace = Path(out).parent / "traces" / f"{common['run_id']}.jsonl"
+        for index, item in enumerate(turns, 1):
+            data.append_row(trace, dict(id=example.id, step=index, output=item.text,
+                                        latency_ms=item.latency_ms, finish_reason=item.finish_reason))
     if not isinstance(example.expected, dict) or verification is None:
         target = example.expected.get("label") if isinstance(example.expected, dict) else example.expected
         row["correct"] = score.is_correct(target, final) if target is not None else None
@@ -104,12 +111,6 @@ def benchmark_row(example, prompt, common, attempt, repair, chat, out):
     verification["fields_correct_before"] = {
         key: score.compare_field(key, value, (before or {}).get(key)) for key, value in example.expected.items()
     }
-    row["verify"] = verification
-    if repair:
-        trace = Path(out).parent / "traces" / f"{common['run_id']}.jsonl"
-        for index, item in enumerate(turns, 1):
-            data.append_row(trace, dict(id=example.id, step=index, output=item.text,
-                                        latency_ms=item.latency_ms, finish_reason=item.finish_reason))
     return row
 
 

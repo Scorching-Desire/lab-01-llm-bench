@@ -21,6 +21,7 @@ class Example:
     channel: str = "text"
     input_file: str | None = None
     input_sha256: str | None = None
+    variant: str | None = None
 
 
 def load_jsonl(path: str | Path) -> list[Example]:

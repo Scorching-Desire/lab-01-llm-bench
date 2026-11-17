@@ -42,12 +42,14 @@ def save(img: Image.Image, out: str, max_side: int = MAX_SIDE, **opts) -> str:
     return p.as_posix()
 
 
-def render(text: str, font_path: str, out: str, size: int = 26, max_side: int = MAX_SIDE) -> str:
+def render(text: str, font_path: str, out: str, size: int = 26, max_side: int = MAX_SIDE, background=None) -> str:
     """Канал clean: чистий рендер тексту шрифтом із data/lab2/fonts/."""
     font = ImageFont.truetype(font_path, size)    # OSError, якщо шрифту немає — це навмисно
     img = Image.new("RGB", PAGE, "white")
+    if background is not None:
+        img = Image.blend(img, background.convert("RGB").resize(PAGE), 0.28)
     draw, y = ImageDraw.Draw(img), 70
-    for line in textwrap.wrap(text, 70) or [""]:
+    for line in [line for block in text.split("\n") for line in (textwrap.wrap(block, 64) or [""])]:
         draw.text((70, y), line, fill="black", font=font)
         y += int(size * 1.5)
     return save(img, out, max_side)

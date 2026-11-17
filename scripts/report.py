@@ -256,11 +256,14 @@ BLOCKS = {
 
 
 def main() -> None:
+    from report_lab2 import BLOCKS as lab2_blocks
+
+    available = {**BLOCKS, **lab2_blocks}
     ap = argparse.ArgumentParser()
-    ap.add_argument("blocks", nargs="*", help=f"блоки: {', '.join(BLOCKS)} (без аргументів — усі)")
+    ap.add_argument("blocks", nargs="*", help=f"блоки: {', '.join(available)} (без аргументів — усі)")
     ap.add_argument("--price", action="append", default=[], help="перекрити ціну: alias=IN/OUT (USD за 1 млн)")
     args = ap.parse_args()
-    unknown = set(args.blocks) - set(BLOCKS)
+    unknown = set(args.blocks) - set(available)
     if unknown:
         raise SystemExit(f"невідомі блоки: {sorted(unknown)}")
     prices = {}
@@ -268,8 +271,8 @@ def main() -> None:
         alias, pair = item.split("=")
         price_in, price_out = pair.split("/")
         prices[alias] = (float(price_in), float(price_out))
-    for name in args.blocks or BLOCKS:
-        md_path, build = BLOCKS[name]
+    for name in args.blocks or available:
+        md_path, build = available[name]
         write_block(md_path, name, build(prices))
         print(f"{md_path}: {name}")
 
