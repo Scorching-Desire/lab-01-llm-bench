@@ -47,7 +47,7 @@ class Turn:
 
 
 # Стандартні параметри Chat Completions; решта йде через extra_body
-OPENAI_PARAMS = {"temperature", "top_p", "seed", "max_tokens", "reasoning_effort", "stop"}
+OPENAI_PARAMS = {"temperature", "top_p", "seed", "max_tokens", "reasoning_effort", "stop", "timeout"}
 _clients: dict[str, object] = {}
 
 
@@ -143,7 +143,7 @@ def _to_gemini(messages: list[dict]) -> tuple[str | None, list[types.Content]]:
                 contents.append(types.Content(role="user", parts=[part]))
         else:
             role = "model" if m["role"] == "assistant" else "user"
-            contents.append(types.Content(role=role, parts=[types.Part(text=m["content"])]))
+            contents.append(types.Content(role=role, parts=[types.Part(text=m["content"]), *m.get("media_parts", [])]))
     return system, contents
 
 
@@ -158,6 +158,8 @@ def _gemini_chat(spec, messages, tools, schema, params) -> Turn:
     )
     if "thinking_level" in params:
         config["thinking_config"] = types.ThinkingConfig(thinking_level=params["thinking_level"])
+    if "timeout" in params:
+        config["http_options"] = types.HttpOptions(timeout=round(params["timeout"] * 1000))
     if schema is not None:  # dict, не клас: клас у response_json_schema — TypeError
         config.update(response_mime_type="application/json", response_json_schema=to_strict_schema(schema))
     if tools:
@@ -187,9 +189,21 @@ def _gemini_chat(spec, messages, tools, schema, params) -> Turn:
 
 
 def chat(alias: str, messages: list[dict], tools: list[dict] | None = None,
-         schema: type[BaseModel] | None = None, **params) -> Turn:
+         schema: type[BaseModel] | None = None, *, media: list[str] | None = None, **params) -> Turn:
     """Один крок розмови. params перекривають spec.params; None — «не надсилати»."""
     spec = models.get(alias)
+    if media:
+        from bench.media import part
+
+        if not spec.caps.get("image"):
+            raise ValueError(f"{alias} does not accept images")
+        last = messages[-1]
+        if last["role"] != "user":
+            raise ValueError("media requires a final user message")
+        parts = [part(path, spec.api) for path in media]
+        attached = {"media_parts": parts} if spec.api == "gemini_native" else {
+            "content": [{"type": "text", "text": last["content"]}, *parts]}
+        messages = [*messages[:-1], {**last, **attached}]
     merged = {k: v for k, v in {**spec.params, **params}.items() if v is not None}
     call = _gemini_chat if spec.api == "gemini_native" else _openai_chat
     turn = call(spec, messages, tools, schema, merged)

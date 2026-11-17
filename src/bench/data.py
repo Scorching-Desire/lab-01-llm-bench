@@ -17,11 +17,16 @@ class Example:
     expected: object   # рядок мітки (або об'єкт для задач витягу полів)
     split: str
     tags: list[str]
+    src_id: str | None = None
+    channel: str = "text"
+    input_file: str | None = None
+    input_sha256: str | None = None
 
 
 def load_jsonl(path: str | Path) -> list[Example]:
     """Рядки JSONL (UTF-8) → список Example; порожні рядки пропускаються."""
-    return [Example(**row) for row in read_rows(path)]
+    return [Example(**{key: value for key, value in row.items() if key in Example.__dataclass_fields__})
+            for row in read_rows(path)]
 
 
 def select(examples: list[Example], split: str | None = None, tag: str | None = None,

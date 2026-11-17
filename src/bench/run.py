@@ -95,6 +95,8 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     ap.add_argument("--resume", action="store_true", help="пропустити id, що вже мають рядок без помилки")
     ap.add_argument("--max-rpm", type=float, help="не більше N запитів на хвилину")
     ap.add_argument("--run-id")
+    ap.add_argument("--channel", choices=["text", "clean", "scan"], default="text")
+    ap.add_argument("--repair", action="store_true")
     return ap.parse_args(argv)
 
 
@@ -110,6 +112,12 @@ def main(argv: list[str] | None = None, *, concurrency: int = 1, retry_attempts:
     chat_fn = chat or clients.chat
     spec, prompt = models.get(a.model), prompts.load_prompt(a.prompt)
     examples = data.load_jsonl(a.data)
+    lab2 = prompt.version.startswith("lab2-")
+    if a.channel != "text" and (not lab2 or not spec.caps.get("image")):
+        raise SystemExit("This prompt/model combination does not accept image channels")
+    if lab2 and a.out is None:
+        raise SystemExit("Lab 02 requires --out")
+    examples = [ex for ex in examples if ex.channel == a.channel]
     ids = a.ids.split(",") if a.ids else None
     if a.ids_file:
         with open(a.ids_file, encoding="utf-8") as f:
@@ -139,6 +147,15 @@ def main(argv: list[str] | None = None, *, concurrency: int = 1, retry_attempts:
                   mode=a.mode or "A", concurrency=concurrency)
     print(f"{run_id}: {len(todo)} прикладів → {out}")
     for ex in todo:
+        if lab2:
+            from bench.service import benchmark_row
+
+            row = benchmark_row(ex, prompt, common, attempts[ex.id] + 1, a.repair, chat_fn, out)
+            data.append_row(out, row)
+            print(f"  {ex.id}: {row['error_type'] or row['correct']}", flush=True)
+            if a.max_rpm:
+                time.sleep(60 / a.max_rpm)
+            continue
         messages = prompts.render(prompt, ex, dev)
         row = data.new_row(**common, id=ex.id, split=ex.split, tags=ex.tags, attempt=attempts[ex.id] + 1)
         start = time.perf_counter()

@@ -23,6 +23,11 @@ class ModelSpec:
 
 
 MODELS: dict[str, ModelSpec] = {
+    "local-vision": ModelSpec(
+        alias="local-vision", api="openai_chat", model="bonsai-2:2b",
+        base_url="http://localhost:11434/v1", key_env=None, api_key_default="ollama", num_ctx=16384,
+        params={"temperature": 0, "seed": 7, "max_tokens": 512}, caps={"image": True, "json_schema": True},
+    ),
     "gemini-lite": ModelSpec(
         alias="gemini-lite", api="openai_chat", model="gemini-3.1-flash-lite",
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/", key_env="GEMINI_API_KEY",
@@ -34,7 +39,7 @@ MODELS: dict[str, ModelSpec] = {
     "gemini-lite-native": ModelSpec(
         alias="gemini-lite-native", api="gemini_native", model="gemini-3.1-flash-lite",
         base_url=None, key_env="GEMINI_API_KEY", params={"thinking_level": "low", "max_tokens": 4096},
-        caps={"tools": True, "json_schema": True, "reasoning_control": True},
+        caps={"tools": True, "json_schema": True, "reasoning_control": True, "image": True},
         price_in=0.25, price_out=1.50, price_src="https://ai.google.dev/gemini-api/docs/pricing",
         price_date="2026-10-27", free_tier=True, trains_on_data=True,
     ),
