@@ -22,7 +22,7 @@ def extract(document, prompt, *, model, mode, repair=False, chat=clients.chat):
             raise MediaError("missing image or SHA-256 mismatch")
         document = replace(document, input="[документ подано зображенням]")
     messages = prompts.render(prompt, document, [])
-    fields = prompt.version == "lab2-fields-v1"
+    fields = prompt.version.startswith("lab2-fields-")
     if fields:
         from bench.schema_fields import DocFields
 
@@ -119,7 +119,7 @@ def main():
     load_dotenv()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--in", dest="path", required=True)
-    parser.add_argument("--model", default="local-vision")
+    parser.add_argument("--model", default="local-vision-extract")
     parser.add_argument("--mode", choices=["A", "B"], default="B")
     parser.add_argument("--prompt", default="prompts/lab2-fields-v1.md")
     parser.add_argument("--out")
