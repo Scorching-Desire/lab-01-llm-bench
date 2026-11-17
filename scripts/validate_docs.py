@@ -15,7 +15,12 @@ AWKWARD = {"empty", "twins", "date_format", "long_list", "comma_number", "bounda
 
 
 def validate(path):
-    rows, errors = check_file(str(path), {"dev", "test"})
+    try:
+        rows, errors = check_file(str(path), {"dev", "test"})
+    except OSError as error:
+        return [f"{path}: {error.strerror}"]
+    if not rows:
+        errors.append(f"{path}: empty dataset")
     media_root = ROOT / "data/lab2/media"
     counts = Counter(r.get("channel") for r in rows)
     print(summary(rows), f"channels: {dict(counts)}")
