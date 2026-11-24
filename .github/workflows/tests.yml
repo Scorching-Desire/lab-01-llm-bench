@@ -38,5 +38,8 @@ jobs:
       - name: Check evidence and regenerate reports
         run: |
           uv run python scripts/audit_lab2.py
+          uv run python scripts/validate_corpus.py --attacks data/lab3/attacks.jsonl
+          uv run python scripts/check_leak.py
+          uv run python scripts/audit_lab3.py
           uv run python scripts/report.py
-          git diff --exit-code -- docs/lab1 docs/lab2
+          git diff --exit-code -- docs/lab1 docs/lab2 docs/lab3

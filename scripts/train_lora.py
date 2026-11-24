@@ -13,17 +13,22 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data", default="data/lab3/train.jsonl")
     parser.add_argument("--base", default="Qwen/Qwen3-0.6B")
+    parser.add_argument("--revision")
     parser.add_argument("--out", default="models/lab3/adapter")
     parser.add_argument("--rank", type=int, default=8)
     parser.add_argument("--alpha", type=int, default=8)
     parser.add_argument("--max-steps", type=int, default=32)
     args = parser.parse_args()
+    if min(args.rank, args.alpha, args.max_steps) < 1:
+        parser.error("rank, alpha and max-steps must be positive")
+    revision = args.revision or ("c1899de289a04d12100db370d81485cdf75e47ca"
+                                 if args.base == "Qwen/Qwen3-0.6B" else None)
     import torch
     from peft import LoraConfig, get_peft_model
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
     started = time.perf_counter()
-    evidence = dict(base=args.base, rank=args.rank, alpha=args.alpha, target_modules=["q_proj", "v_proj"],
+    evidence = dict(base=args.base, revision=revision, rank=args.rank, alpha=args.alpha, target_modules=["q_proj", "v_proj"],
                     steps=args.max_steps, torch=torch.__version__, cuda=torch.version.cuda,
                     cuda_available=torch.cuda.is_available(), step_seconds=[],
                     git_sha=subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
@@ -40,9 +45,9 @@ def main():
         if any(row.get("src_split") not in {"dev", "corpus"} for row in rows):
             raise ValueError("unexpected training provenance")
         torch.manual_seed(20261124)
-        tokenizer = AutoTokenizer.from_pretrained(args.base)
+        tokenizer = AutoTokenizer.from_pretrained(args.base, revision=revision)
         tokenizer.pad_token = tokenizer.eos_token
-        base = AutoModelForCausalLM.from_pretrained(args.base, dtype=torch.float16).to("cuda")
+        base = AutoModelForCausalLM.from_pretrained(args.base, revision=revision, dtype=torch.float16).to("cuda")
         evidence["base_revision"] = getattr(base.config, "_commit_hash", None)
         model = get_peft_model(base, LoraConfig(r=args.rank, lora_alpha=args.alpha,
                                target_modules=["q_proj", "v_proj"], bias="none", task_type="CAUSAL_LM"))

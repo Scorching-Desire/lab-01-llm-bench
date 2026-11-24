@@ -137,6 +137,8 @@ def main():
     args = parser.parse_args()
     if args.fuse and args.backend != "both":
         parser.error("rrf requires both backends")
+    if args.k is not None and args.k < 1:
+        parser.error("k must be positive")
     if (args.mode is not None or args.k is not None) and args.split != "dev":
         parser.error("mode/k overrides are restricted to dev")
     config = config_values()
@@ -147,6 +149,13 @@ def main():
         return
     out = args.out or f"results/lab3/01-{args.backend}-{args.mode or config['lex_mode']}.jsonl"
     previous = data.read_rows(out)
+    conditions = dict(dataset_sha256=data.sha256_file(QUERIES),
+                      config_sha256=data.sha256_file("src/bench/retrieval_config.py"),
+                      backend=args.backend, fuse=args.fuse, lex_mode=args.mode or config["lex_mode"],
+                      top_k=args.k or config["top_k"], split=args.split)
+    for old in previous:
+        if any(old.get(key) != value for key, value in conditions.items()):
+            raise ValueError("retrieval conditions changed: choose a new output file")
     run = data.utc_now().replace(":", "-") + "_retrieval"
     with connect(args.db, dense_enabled=args.backend != "lex") as con:
         for query in data.read_rows(QUERIES):
@@ -155,10 +164,8 @@ def main():
             start = time.perf_counter()
             result = retrieve(con, query["input"], args.backend, config, args.mode, args.k)
             row = data.new_row(run_id=run, ts=data.utc_now(), git_sha=data.git_sha(),
-                dataset_sha256=data.sha256_file(QUERIES), config_sha256=data.sha256_file("src/bench/retrieval_config.py"),
-                params=config, id=query["id"], split=query["split"], tags=query["tags"],
-                backend=args.backend, fuse=args.fuse, lex_mode=args.mode or config["lex_mode"],
-                top_k=args.k or config["top_k"], retrieved=[r["chunk_id"] for r in result],
+                **conditions, params=config, id=query["id"], tags=query["tags"],
+                retrieved=[r["chunk_id"] for r in result],
                 latency_ms=round((time.perf_counter() - start) * 1000),
                 attempt=1 + sum(r["id"] == query["id"] for r in previous), **metrics(query, result))
             data.append_row(out, row)

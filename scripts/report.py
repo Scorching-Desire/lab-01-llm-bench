@@ -257,8 +257,9 @@ BLOCKS = {
 
 def main() -> None:
     from report_lab2 import BLOCKS as lab2_blocks
+    from report_lab3 import BLOCKS as lab3_blocks
 
-    available = {**BLOCKS, **lab2_blocks}
+    available = {**BLOCKS, **lab2_blocks, **lab3_blocks}
     ap = argparse.ArgumentParser()
     ap.add_argument("blocks", nargs="*", help=f"блоки: {', '.join(available)} (без аргументів — усі)")
     ap.add_argument("--price", action="append", default=[], help="перекрити ціну: alias=IN/OUT (USD за 1 млн)")

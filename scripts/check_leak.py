@@ -42,6 +42,10 @@ def main():
     parser.add_argument("--queries", default="data/lab3/queries.jsonl")
     args = parser.parse_args()
     errors = check(data.read_rows(args.train), data.read_rows(args.queries))
+    known = {r["doc_id"] for r in data.read_rows("data/lab3/manifest.jsonl")}
+    for number, row in enumerate(data.read_rows(args.train), 1):
+        if not set(row.get("src_doc_ids", [])).issubset(known):
+            errors.append(f"train:{number}: unknown source document")
     for error in errors:
         print(error)
     print(f"{len(errors)} leaks; Jaccard threshold={THRESHOLD}")

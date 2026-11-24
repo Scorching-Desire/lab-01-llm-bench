@@ -4,6 +4,24 @@ Lab 01: відтворюваний LLM bench для маршрутизації �
 [Офіційне завдання](https://koldovsky.github.io/2026-2027-practical-genai-agentic-course/labs/01-llm-bench).
 Звіт і чесний статус кожної вимоги: [docs/lab1/README.md](docs/lab1/README.md).
 
+## Lab 03 · RAG та адаптація
+
+[Звіт Lab 03](docs/lab3/README.md) і [офіційне завдання](https://koldovsky.github.io/2026-2027-practical-genai-agentic-course/labs/03-rag-adaptation/).
+Потрібні Python 3.13, установлений uv і запущений Ollama з локальним `bge-m3:latest`. У свіжому клоні перша команда синхронізує locked-залежності та будує індекс, друга відтворює таблицю з опублікованих JSONL.
+
+```powershell
+python -m uv run --locked --python 3.13 python -m bench.index --backend both --rebuild
+python -m uv run --locked python scripts/report.py lines lines_flips
+```
+
+Живий повтор на цій машині використовує імпортовану базову Q8-модель і той самий індекс.
+
+```powershell
+python -m uv run python -m bench.answer --line rag --model lab3-base --qid q00,q05,multi0 --out results/lab3/06-replay.jsonl
+```
+
+Побудову власної Q8-бази й адаптера описано в [adapt.md](docs/lab3/adapt.md). Ваги лежать локально в ігнорованій `models/lab3/`. Перевірки без моделей — `python -m uv run pytest`, `python -m uv run python scripts/validate_corpus.py --attacks data/lab3/attacks.jsonl`, `python -m uv run python scripts/check_leak.py` та `python -m uv run python scripts/audit_lab3.py`.
+
 ## Lab 02 · Витяг полів із квитанцій makerspace
 
 [Звіт Lab 02](docs/lab2/README.md) і [офіційне завдання](https://koldovsky.github.io/2026-2027-practical-genai-agentic-course/labs/02-genai-service/).

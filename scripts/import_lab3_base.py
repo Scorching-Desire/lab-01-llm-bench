@@ -11,9 +11,10 @@ def main():
     root = Path("models/lab3").resolve()
     base = root / "base-hf"
     base.mkdir(parents=True, exist_ok=True)
-    model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-0.6B", dtype="float16")
+    revision = "c1899de289a04d12100db370d81485cdf75e47ca"
+    model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-0.6B", revision=revision, dtype="float16")
     model.save_pretrained(base, safe_serialization=True)
-    AutoTokenizer.from_pretrained("Qwen/Qwen3-0.6B").save_pretrained(base)
+    AutoTokenizer.from_pretrained("Qwen/Qwen3-0.6B", revision=revision).save_pretrained(base)
     converted = root / "base-q8.gguf"
     subprocess.run([sys.executable, str(root / "llama.cpp/convert_hf_to_gguf.py"), str(base),
                     "--outfile", str(converted), "--outtype", "q8_0"], check=True)
