@@ -5,7 +5,7 @@
 | Пункт | Крок | Де доказ | Команда перевірки | Виконано |
 |---|---|---|---|---|
 | Г1 | 00, 06 | Публічний origin, тема «обслуговування», власна синтетика | Перевірити таблицю групи | Реєстрація студентом не підтверджена |
-| Г2 | 00–06 | Workflow tests.yml, офлайн тести всіх лабораторних | `python -m uv sync --locked`, `python -m uv run pytest` | Локально перевірено. CI нового SHA після дозволеного push |
+| Г2 | 00–06 | Workflow tests.yml, офлайн тести всіх лабораторних | `python -m uv sync --locked`, `python -m uv run pytest` | Локально перевірено; опублікований код пройшов GitHub Actions, [доказ](verification.md#публікація) |
 | Г3 | 00–06 | .gitignore, база 5fd1660, [corpus.md](corpus.md) | `python -m uv run python scripts/audit_lab3.py` | Так, заморожені еталони Л1/Л2 і попередні тести збережені |
 | Г4 | 06 | Цей перший розділ | Звірити Г1–Г4, П1–П12, Р1–Р4 | Так |
 | П1 | 00 | 24 документи, manifest/chunks, [corpus.md](corpus.md) | `uv run python scripts/validate_corpus.py` | Так, 240783 байти, кожен документ і фрагмент перевірено |
