@@ -28,6 +28,11 @@ imagegen = [
     "torch>=2.15.0",
     "transformers>=5.23.0",
 ]
+tune = [
+    "peft>=0.22.0",
+    "torch>=2.15.0",
+    "transformers>=5.23.0",
+]
 
 [build-system]
 requires = ["uv_build>=0.13.6,<0.14.0"]

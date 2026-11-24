@@ -11,5 +11,5 @@ CONFIG = {
     "k_dense": 20,
     "rrf_k": 60,
     "top_k": 5,
-    "single_best": "dense",
+    "single_best": "lex",
 }

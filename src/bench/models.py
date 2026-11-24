@@ -23,6 +23,12 @@ class ModelSpec:
 
 
 MODELS: dict[str, ModelSpec] = {
+    "lab3-lora": ModelSpec(
+        alias="lab3-lora", api="openai_chat", model="lab3-qwen06-lora:latest",
+        base_url="http://localhost:11434/v1", key_env=None, api_key_default="ollama", num_ctx=16384,
+        params={"temperature": 0, "seed": 7, "reasoning_effort": "none", "max_tokens": 768},
+        caps={"json_schema": True},
+    ),
     "local-vision": ModelSpec(
         alias="local-vision", api="openai_chat", model="bonsai-2:2b",
         base_url="http://localhost:11434/v1", key_env=None, api_key_default="ollama", num_ctx=16384,
