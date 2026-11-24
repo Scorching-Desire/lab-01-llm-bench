@@ -13,6 +13,12 @@ def norm(s: str) -> str:
     return " ".join(s.split()).casefold()
 
 
+def answer_correct(expected: str, text: str) -> bool:
+    """Lab 03 correctness is canonical-answer containment in the first line."""
+    lines = (text or "").strip().splitlines()
+    return bool(lines and norm(expected) and norm(expected) in norm(lines[0]))
+
+
 def wilson_ci(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
     """95% інтервал Вілсона для частки k/n."""
     if n == 0:
