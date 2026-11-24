@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import subprocess
 import time
 from pathlib import Path
 
@@ -24,7 +25,9 @@ def main():
     started = time.perf_counter()
     evidence = dict(base=args.base, rank=args.rank, alpha=args.alpha, target_modules=["q_proj", "v_proj"],
                     steps=args.max_steps, torch=torch.__version__, cuda=torch.version.cuda,
-                    cuda_available=torch.cuda.is_available(), step_seconds=[])
+                    cuda_available=torch.cuda.is_available(), step_seconds=[],
+                    git_sha=subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+                    dataset_sha256=hashlib.sha256(Path(args.data).read_bytes()).hexdigest())
     output = Path("results/lab3/05-training.jsonl")
     output.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -40,6 +43,7 @@ def main():
         tokenizer = AutoTokenizer.from_pretrained(args.base)
         tokenizer.pad_token = tokenizer.eos_token
         base = AutoModelForCausalLM.from_pretrained(args.base, dtype=torch.float16).to("cuda")
+        evidence["base_revision"] = getattr(base.config, "_commit_hash", None)
         model = get_peft_model(base, LoraConfig(r=args.rank, lora_alpha=args.alpha,
                                target_modules=["q_proj", "v_proj"], bias="none", task_type="CAUSAL_LM"))
         model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})

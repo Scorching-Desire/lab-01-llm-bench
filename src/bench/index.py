@@ -20,18 +20,21 @@ QUERIES = "data/lab3/queries.jsonl"
 DB = ".index/lab3.db"
 
 
-def connect(path):
+def connect(path, dense_enabled=True):
     connection = sqlite3.connect(path)
     connection.row_factory = sqlite3.Row
-    connection.enable_load_extension(True)
-    sqlite_vec.load(connection)
-    connection.enable_load_extension(False)
+    if dense_enabled:
+        connection.enable_load_extension(True)
+        try:
+            sqlite_vec.load(connection)
+        finally:
+            connection.enable_load_extension(False)
     return connection
 
 
 def build_index(path, chunks, backend="both", model="bge-m3:latest", embedder=embed):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-    with connect(path) as con:
+    with connect(path, dense_enabled=backend != "lex") as con:
         con.execute("CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY, value TEXT NOT NULL)")
         fingerprint = hashlib.sha256(json.dumps(chunks, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
         old = con.execute("SELECT value FROM meta WHERE key='chunks'").fetchone()
@@ -145,7 +148,7 @@ def main():
     out = args.out or f"results/lab3/01-{args.backend}-{args.mode or config['lex_mode']}.jsonl"
     previous = data.read_rows(out)
     run = data.utc_now().replace(":", "-") + "_retrieval"
-    with connect(args.db) as con:
+    with connect(args.db, dense_enabled=args.backend != "lex") as con:
         for query in data.read_rows(QUERIES):
             if query["split"] != args.split:
                 continue

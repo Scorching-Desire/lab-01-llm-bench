@@ -32,3 +32,16 @@ def test_span_metrics_require_exact_quote_and_document():
     assert not metrics(query, [dict(doc_id="other", text="пломбою")])["hit"]
     assert metrics(query, [dict(doc_id="d", text="за пломбою")])["hit"]
     assert metrics(dict(gold_spans=[]), [dict(doc_id="d", text="пломбою")])["recall"] is None
+
+
+def test_lexical_build_survives_vector_extension_failure(monkeypatch, tmp_path):
+    import sqlite_vec
+
+    def unavailable(connection):
+        raise RuntimeError("unavailable extension")
+
+    monkeypatch.setattr(sqlite_vec, "load", unavailable)
+    path = tmp_path / "lex.sqlite"
+    build_index(path, [dict(chunk_id="a", doc_id="d", text="пломбою")], "lex")
+    with connect(path, dense_enabled=False) as con:
+        assert lexical(con, "пломбою")[0]["chunk_id"] == "a"
